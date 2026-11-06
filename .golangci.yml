@@ -1,0 +1,18 @@
+version: "2"
+
+linters:
+  default: all
+  disable:
+    - wsl
+    - exhaustruct
+    - gomodguard
+  exclusions:
+    warn-unused: true
+    rules:
+      - linters:
+          - revive
+        text: "package-comments: should have a package comment"
+
+formatters:
+  enable:
+    - gofumpt
