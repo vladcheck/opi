@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-- CLI supports reading files by path
+- CLI supports:
+  - reading files by path
+  - working with oneliners (--exec)
+- Lexer supports:
+  - integers
+  - line information for each token
 
 <!-- Links -->
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/
