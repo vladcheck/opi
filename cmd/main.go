@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"vladcheck/opi/internal"
 )
 
 const extension = ".opi"
@@ -36,15 +37,51 @@ func run() error {
 		flag.PrintDefaults()
 	}
 
+	var execPtr string
+	flag.StringVar(&execPtr, "exec", "", "--exec <code>")
+	flag.StringVar(&execPtr, "e", "", "-e <code>")
+
 	flag.Parse()
 
-	if len(flag.Args()) < 1 {
+	if len(execPtr) > 0 {
+		err := executionLoop(execPtr)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	if len(flag.Args()) == 0 {
 		return fmt.Errorf("%w", ErrPathRequired)
 	}
 
 	path := filepath.Clean(flag.Arg(0))
-	if err := validatePath(path); err != nil {
-		return err
+
+	err := validatePath(path)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	err = executionLoop(string(content))
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	return nil
+}
+
+func executionLoop(content string) error {
+	tokenizer := internal.NewTokenizer(content)
+
+	_, err := tokenizer.Tokenize()
+	if err != nil {
+		return fmt.Errorf("%w", err)
 	}
 
 	return nil
