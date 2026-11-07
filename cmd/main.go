@@ -16,6 +16,7 @@ import (
 const extension = ".opi"
 
 var (
+	logger    = log.New(os.Stdout, "", 0)
 	errLogger = log.New(os.Stderr, "ERROR: ", 0)
 
 	ErrPathRequired   = errors.New("filepath is not specified")
@@ -79,9 +80,13 @@ func run() error {
 func executionLoop(content string) error {
 	tokenizer := internal.NewTokenizer(content)
 
-	_, err := tokenizer.Tokenize()
+	tokens, err := tokenizer.Tokenize()
 	if err != nil {
 		return fmt.Errorf("%w", err)
+	}
+
+	for _, t := range tokens {
+		logger.Println(t.Value)
 	}
 
 	return nil

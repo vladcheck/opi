@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"strings"
+)
+
 // Tokenizer is responsible for taking source code and turning it into a slice of tokens.
 type Tokenizer struct {
 	input                string
@@ -21,14 +25,77 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 	tokens := make([]Token, 0, 2) //nolint:mnd
 
 	for !t.isEOF() {
-		t.current++
+		token, ok := t.match()
+
+		if ok {
+			tokens = append(tokens, token)
+		}
 	}
 
-	tokens = append(tokens, newToken(ttEOF, t.line, "\\0"))
+	tokens = append(tokens, newToken(ttEOF, t.line, `\0`))
 
 	return tokens, nil
 }
 
+func (t *Tokenizer) match() (Token, bool) {
+	// fmt.Printf("start: '%v' current: '%v' peek: '%s' peekNext: '%s'\n", t.start, t.current, t.peek(), t.peekNext())
+	switch {
+	case isWhitespace(t.peek()):
+		t.skipWhitespace()
+
+		return Token{}, false
+	case isDigit(t.peek()):
+		for isDigit(t.peek()) {
+			t.advance()
+		}
+
+		token := newToken(ttNumber, t.line, t.input[t.start:t.current])
+		t.consume()
+
+		return token, true
+	case strings.EqualFold(t.peek(), "+"):
+		token := newToken(ttPlus, t.line, "+")
+		t.advance()
+		t.consume()
+
+		return token, true
+	default:
+		return Token{}, false
+	}
+}
+
+func (t *Tokenizer) peek() string {
+	if t.isEOF() {
+		return ""
+	}
+
+	return string(t.input[t.current])
+}
+
+// func (t *Tokenizer) peekNext() string {
+// 	if t.isEOF() || t.current+1 >= len(t.input) {
+// 		return ""
+// 	}
+
+// 	return string(t.input[t.current+1])
+// }
+
+func (t *Tokenizer) skipWhitespace() {
+	for isWhitespace(t.peek()) {
+		t.advance()
+	}
+
+	t.consume()
+}
+
 func (t *Tokenizer) isEOF() bool {
 	return t.current >= len(t.input)
+}
+
+func (t *Tokenizer) advance() {
+	t.current++
+}
+
+func (t *Tokenizer) consume() {
+	t.start = t.current
 }

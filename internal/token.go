@@ -1,7 +1,11 @@
 package internal
 
 const (
-	ttEOF = iota
+	ttEOF    = iota // \0
+	ttNumber        // literal number
+	ttString        // literal string
+	ttNull          // null
+	ttPlus          // +
 )
 
 // Token represents a smallest unit of opi language.

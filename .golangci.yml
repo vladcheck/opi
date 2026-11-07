@@ -14,9 +14,12 @@ linters:
           - revive
         text: "package-comments: should have a package comment"
   settings:
+    exhaustruct_v5:
+      allow-empty: true
     depguard:
       rules:
         main:
+          list-mode: "lax"
           allow:
             - $gostd
             - vladcheck/opi
