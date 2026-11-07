@@ -6,12 +6,20 @@ linters:
     - wsl
     - exhaustruct
     - gomodguard
+    - noinlineerr
   exclusions:
     warn-unused: true
     rules:
       - linters:
           - revive
         text: "package-comments: should have a package comment"
+  settings:
+    depguard:
+      rules:
+        main:
+          allow:
+            - $gostd
+            - vladcheck/opi
 
 formatters:
   enable:

@@ -1,5 +1,5 @@
 pre-commit:
   parallel: true
   jobs:
-    - run: golangci-lint run {staged_files}
+    - run: lintme run
       glob: "*.go"
