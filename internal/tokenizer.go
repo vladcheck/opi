@@ -16,7 +16,7 @@ func NewTokenizer(input string) Tokenizer {
 		input:   input,
 		start:   0,
 		current: 0,
-		line:    0,
+		line:    1,
 	}
 }
 
@@ -32,14 +32,20 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 		}
 	}
 
-	tokens = append(tokens, newToken(ttEOF, t.line, `\0`))
+	tokens = append(tokens, newToken(ttEOF, t.line, "\x00"))
 
 	return tokens, nil
 }
 
 func (t *Tokenizer) match() (Token, bool) {
-	// fmt.Printf("start: '%v' current: '%v' peek: '%s' peekNext: '%s'\n", t.start, t.current, t.peek(), t.peekNext())
+	// fmt.Printf("start: '%v' current: '%v' peek: '%s'\n", t.start, t.current, t.peek())
 	switch {
+	case strings.EqualFold(t.peek(), "\n"):
+		t.line++
+		t.advance()
+		t.consume()
+
+		return Token{}, false
 	case isWhitespace(t.peek()):
 		t.skipWhitespace()
 

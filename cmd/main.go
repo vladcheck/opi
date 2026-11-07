@@ -86,7 +86,7 @@ func executionLoop(content string) error {
 	}
 
 	for _, t := range tokens {
-		logger.Println(t.Value)
+		logger.Printf("%d: '%v'\n", t.Line, t.Value)
 	}
 
 	return nil
