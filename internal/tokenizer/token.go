@@ -37,6 +37,19 @@ const (
 	ttFalse                          // false
 	ttAnd                            // and
 	ttOr                             // or
+	ttIf                             // if
+	ttElse                           // else
+	ttSwitch                         // switch
+	ttFall                           // fall. Works like fallthrough in Golang
+	ttBreak                          // break
+	ttContinue                       // continue
+	ttFunc                           // func
+	ttRet                            // ret
+	ttDefer                          // defer
+	ttMut                            // mut. Taken inspiration from Rust
+	ttFor                            // for
+	ttWhile                          // while
+	ttDo                             // do
 )
 
 // Token represents a smallest unit of opi language.
@@ -61,10 +74,23 @@ func (t Token) String() string {
 
 func tokenTypeBySubstring(substring string) (TokenType, bool) {
 	ttKeywordMap := map[string]TokenType{
-		"true":  ttTrue,
-		"false": ttFalse,
-		"and":   ttAnd,
-		"or":    ttOr,
+		"true":     ttTrue,
+		"false":    ttFalse,
+		"and":      ttAnd,
+		"or":       ttOr,
+		"if":       ttIf,       // if
+		"else":     ttElse,     // else
+		"switch":   ttSwitch,   // switch
+		"fall":     ttFall,     // fall. Works like fallthrough in Golang
+		"break":    ttBreak,    // break
+		"continue": ttContinue, // continue
+		"func":     ttFunc,     // func
+		"ret":      ttRet,      // ret
+		"defer":    ttDefer,    // defer
+		"mut":      ttMut,      // mut. Taken inspiration from Rust
+		"for":      ttFor,      // for
+		"while":    ttWhile,    // while
+		"do":       ttDo,       // do
 	}
 	tt, ok := ttKeywordMap[substring]
 
@@ -104,6 +130,19 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttFalse:         "False",
 		ttAnd:           "And",
 		ttOr:            "Or",
+		ttIf:            "If",       // if
+		ttElse:          "Else",     // else
+		ttSwitch:        "Switch",   // switch
+		ttFall:          "Fall",     // fall. Works like fallthrough in Golang
+		ttBreak:         "Break",    // break
+		ttContinue:      "Continue", // continue
+		ttFunc:          "Func",     // func
+		ttRet:           "Ret",      // ret
+		ttDefer:         "Defer",    // defer
+		ttMut:           "Mut",      // mut. Taken inspiration from Rust
+		ttFor:           "For",      // for
+		ttWhile:         "While",    // while
+		ttDo:            "Do",       // do
 	}
 
 	value, ok := ttStringMap[tokenType]

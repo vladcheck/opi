@@ -21,5 +21,9 @@ i_am_a_symbol_2 // symbol
 3true           // number true
 
 // Keywords
-true
-false
+mut
+true false
+if else or and
+switch fall
+func ret
+for do while break continue
