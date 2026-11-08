@@ -1,6 +1,9 @@
 package tokenizer
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // TokenType represents a type of a token, say a number, an identifier, or something different.
 type TokenType int
@@ -11,6 +14,7 @@ const (
 	ttNumber                         // literal number
 	ttString                         // literal string
 	ttNull                           // null
+	ttDoubleQuote                    // "
 	ttExclamation                    // !
 	ttNotEquals                      // !=
 	ttPlus                           // +
@@ -69,6 +73,10 @@ func newToken(tokenType TokenType, line int, value string) Token {
 
 // String represents a Token in plain string format.
 func (t Token) String() string {
+	if strings.EqualFold(string(t.Value[0]), "\"") {
+		return fmt.Sprintf("[line %d]: %s (%s)", t.Line, tokenTypeToString(t.TokenType), t.Value)
+	}
+
 	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), t.Value)
 }
 
@@ -104,6 +112,7 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttNumber:        "Number",
 		ttString:        "String",
 		ttNull:          "Null",
+		ttDoubleQuote:   "DoubleQuote",
 		ttExclamation:   "Exclamation",
 		ttNotEquals:     "NotEquals",
 		ttPlus:          "Plus",

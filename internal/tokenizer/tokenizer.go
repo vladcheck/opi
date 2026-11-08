@@ -8,6 +8,7 @@ import (
 type Tokenizer struct {
 	input                              string
 	start, current, line, commentDepth int
+	inString                           bool
 }
 
 // NewTokenizer creates a new Tokenizer.
@@ -18,6 +19,7 @@ func NewTokenizer(input string) Tokenizer {
 		current:      0,
 		line:         1,
 		commentDepth: 0,
+		inString:     false,
 	}
 }
 
@@ -57,6 +59,8 @@ func (t *Tokenizer) match() (Token, bool) {
 		}
 
 		return t.emit(ttNumber), true
+	case t.isPeekMatches("\""):
+		return t.matchString(), true
 	case t.isPeekMatches("!"):
 		return t.matchExclamation(), true
 	case t.isPeekMatches("+"):
@@ -88,6 +92,38 @@ func (t *Tokenizer) match() (Token, bool) {
 	default:
 		return Token{}, false
 	}
+}
+
+func (t *Tokenizer) matchString() Token {
+	t.advance()
+
+	possibleEscape := false
+
+	for !t.isEOL() && !t.isEOF() {
+		if t.isPeekMatches("\\") {
+			possibleEscape = true
+
+			t.advance()
+
+			continue
+		}
+
+		if t.isPeekMatches("\"") {
+			if !possibleEscape {
+				break // string has ended
+			}
+		}
+
+		t.advance()
+
+		if possibleEscape {
+			possibleEscape = false
+		}
+	}
+
+	t.advance()
+
+	return t.emit(ttString)
 }
 
 func (t *Tokenizer) matchExclamation() Token {

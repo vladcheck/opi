@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning].
   - reading files by path
   - working with oneliners (--exec)
 - Lexer supports:
-  - integers
+  - literals: positive integers, strings
   - line information for each token
   - inline, multiline and nested multiline comments
 

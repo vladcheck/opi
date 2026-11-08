@@ -14,6 +14,11 @@
 %= %        // percent
 == =        // equals
 
+// Literals
+""              // empty string
+"string"        // string
+36              // positive integer
+
 // Symbols
 gibberish       // symbol
 i_am_a_symbol_2 // symbol
