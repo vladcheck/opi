@@ -58,17 +58,25 @@ func (t *Tokenizer) match() (Token, bool) {
 
 		return t.emit(ttNumber), true
 	case strings.EqualFold(t.peek(), "+"):
-		return t.emitSingle(ttMinus, "+"), true
+		return t.emitSingle(ttMinus), true
 	case strings.EqualFold(t.peek(), "-"):
-		return t.emitSingle(ttMinus, "-"), true
+		return t.emitSingle(ttMinus), true
 	case strings.EqualFold(t.peek(), "*"):
-		return t.emitSingle(ttStar, "*"), true
+		return t.emitSingle(ttStar), true
 	case strings.EqualFold(t.peek(), "%"):
-		return t.emitSingle(ttPercent, "%"), true
+		return t.emitSingle(ttPercent), true
 	case strings.EqualFold(t.peek(), "("):
-		return t.emitSingle(ttLeftParen, "("), true
+		return t.emitSingle(ttLeftParen), true
 	case strings.EqualFold(t.peek(), ")"):
-		return t.emitSingle(ttRightParen, ")"), true
+		return t.emitSingle(ttRightParen), true
+	case strings.EqualFold(t.peek(), "["):
+		return t.emitSingle(ttLeftBracket), true
+	case strings.EqualFold(t.peek(), "]"):
+		return t.emitSingle(ttRightBracket), true
+	case strings.EqualFold(t.peek(), "{"):
+		return t.emitSingle(ttLeftBrace), true
+	case strings.EqualFold(t.peek(), "}"):
+		return t.emitSingle(ttRightBrace), true
 	default:
 		return Token{}, false
 	}
@@ -81,8 +89,8 @@ func (t *Tokenizer) emit(tt TokenType) Token {
 	return token
 }
 
-func (t *Tokenizer) emitSingle(tt TokenType, char string) Token {
-	token := newToken(tt, t.line, char)
+func (t *Tokenizer) emitSingle(tt TokenType) Token {
+	token := newToken(tt, t.line, t.peek())
 	t.advance()
 	t.consume()
 

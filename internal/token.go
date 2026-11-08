@@ -6,16 +6,20 @@ import "fmt"
 type TokenType int
 
 const (
-	ttEOF        TokenType = iota // \0
-	ttNumber                      // literal number
-	ttString                      // literal string
-	ttNull                        // null
-	ttPlus                        // +
-	ttMinus                       // -
-	ttStar                        // *
-	ttPercent                     // %
-	ttLeftParen                   // (
-	ttRightParen                  // )
+	ttEOF          TokenType = iota // \0
+	ttNumber                        // literal number
+	ttString                        // literal string
+	ttNull                          // null
+	ttPlus                          // +
+	ttMinus                         // -
+	ttStar                          // *
+	ttPercent                       // %
+	ttLeftParen                     // (
+	ttRightParen                    // )
+	ttLeftBracket                   // [
+	ttRightBracket                  // ]
+	ttLeftBrace                     // {
+	ttRightBrace                    // }
 )
 
 // Token represents a smallest unit of opi language.
