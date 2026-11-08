@@ -58,7 +58,7 @@ func (t *Tokenizer) match() (Token, bool) {
 
 		return t.emit(ttNumber), true
 	case strings.EqualFold(t.peek(), "+"):
-		return t.emitSingle(ttMinus), true
+		return t.emitSingle(ttPlus), true
 	case strings.EqualFold(t.peek(), "-"):
 		return t.emitSingle(ttMinus), true
 	case strings.EqualFold(t.peek(), "*"):
