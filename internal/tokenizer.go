@@ -58,29 +58,29 @@ func (t *Tokenizer) match() (Token, bool) {
 		}
 
 		return t.emit(ttNumber), true
-	case strings.EqualFold(t.peek(), "+"):
+	case t.isPeekMatch("+"):
 		return t.matchPlus(), true
-	case strings.EqualFold(t.peek(), "-"):
+	case t.isPeekMatch("-"):
 		return t.matchMinus(), true
-	case strings.EqualFold(t.peek(), "*"):
+	case t.isPeekMatch("*"):
 		return t.matchStar(), true
-	case strings.EqualFold(t.peek(), "/"):
+	case t.isPeekMatch("/"):
 		return t.matchSlash(), true
-	case strings.EqualFold(t.peek(), "%"):
+	case t.isPeekMatch("%"):
 		return t.matchPercent(), true
-	case strings.EqualFold(t.peek(), "="):
+	case t.isPeekMatch("="):
 		return t.matchEquals(), true
-	case strings.EqualFold(t.peek(), "("):
+	case t.isPeekMatch("("):
 		return t.emitSingle(ttLeftParen), true
-	case strings.EqualFold(t.peek(), ")"):
+	case t.isPeekMatch(")"):
 		return t.emitSingle(ttRightParen), true
-	case strings.EqualFold(t.peek(), "["):
+	case t.isPeekMatch("["):
 		return t.emitSingle(ttLeftBracket), true
-	case strings.EqualFold(t.peek(), "]"):
+	case t.isPeekMatch("]"):
 		return t.emitSingle(ttRightBracket), true
-	case strings.EqualFold(t.peek(), "{"):
+	case t.isPeekMatch("{"):
 		return t.emitSingle(ttLeftBrace), true
-	case strings.EqualFold(t.peek(), "}"):
+	case t.isPeekMatch("}"):
 		return t.emitSingle(ttRightBrace), true
 	default:
 		return Token{}, false
@@ -205,7 +205,11 @@ func (t *Tokenizer) isEOF() bool {
 }
 
 func (t *Tokenizer) isEOL() bool {
-	return !t.isEOF() && strings.EqualFold(t.peek(), "\n")
+	return !t.isEOF() && t.isPeekMatch("\n")
+}
+
+func (t *Tokenizer) isPeekMatch(char string) bool {
+	return strings.EqualFold(t.peek(), char)
 }
 
 func (t *Tokenizer) advanceTwice() {
