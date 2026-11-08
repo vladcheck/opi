@@ -6,33 +6,38 @@ import "fmt"
 type TokenType int
 
 const (
-	ttEOF          TokenType = iota // \0
-	ttNumber                        // literal number
-	ttString                        // literal string
-	ttNull                          // null
-	ttPlus                          // +
-	ttPlusEquals                    // +=
-	ttPlusPlus                      // ++
-	ttMinus                         // -
-	ttStar                          // *
-	ttPercent                       // %
-	ttEquals                        // =
-	ttLeftParen                     // (
-	ttRightParen                    // )
-	ttLeftBracket                   // [
-	ttRightBracket                  // ]
-	ttLeftBrace                     // {
-	ttRightBrace                    // }
+	ttEOF           TokenType = iota // \0
+	ttNumber                         // literal number
+	ttString                         // literal string
+	ttNull                           // null
+	ttPlus                           // +
+	ttPlusEquals                     // +=
+	ttPlusPlus                       // ++
+	ttMinus                          // -
+	ttMinusEquals                    // -=
+	ttMinusMinus                     // --
+	ttStar                           // *
+	ttStarEquals                     // *=
+	ttPercent                        // %
+	ttPercentEquals                  // %=
+	ttEquals                         // =
+	ttEqualsEquals                   // ==
+	ttLeftParen                      // (
+	ttRightParen                     // )
+	ttLeftBracket                    // [
+	ttRightBracket                   // ]
+	ttLeftBrace                      // {
+	ttRightBrace                     // }
 )
 
 // Token represents a smallest unit of opi language.
 type Token struct {
 	TokenType TokenType
 	Line      int
-	Value     any
+	Value     string
 }
 
-func newToken(tokenType TokenType, line int, value any) Token {
+func newToken(tokenType TokenType, line int, value string) Token {
 	return Token{
 		TokenType: tokenType,
 		Line:      line,
@@ -42,5 +47,39 @@ func newToken(tokenType TokenType, line int, value any) Token {
 
 // String represents a Token in plain string format.
 func (t Token) String() string {
-	return fmt.Sprintf("[line %d]: %d (%q)", t.Line, int(t.TokenType), t.Value)
+	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), t.Value)
+}
+
+func tokenTypeToString(tokenType TokenType) string {
+	ttStringMap := map[TokenType]string{
+		ttEOF:           "EOF",
+		ttNumber:        "Number",
+		ttString:        "String",
+		ttNull:          "Null",
+		ttPlus:          "Plus",
+		ttPlusEquals:    "PlusEquals",
+		ttPlusPlus:      "PlusPlus",
+		ttMinus:         "Minus",
+		ttMinusEquals:   "MinusEquals",
+		ttMinusMinus:    "MinusMinus",
+		ttStar:          "Star",
+		ttStarEquals:    "StarEquals",
+		ttPercent:       "Percent",
+		ttPercentEquals: "PercentEquals",
+		ttEquals:        "Equals",
+		ttEqualsEquals:  "EqualsEquals",
+		ttLeftParen:     "LeftParen",
+		ttRightParen:    "RightParen",
+		ttLeftBracket:   "LeftBracket",
+		ttRightBracket:  "RightBracket",
+		ttLeftBrace:     "LeftBrace",
+		ttRightBrace:    "RightBrace",
+	}
+
+	value, ok := ttStringMap[tokenType]
+	if !ok {
+		return "UNMATCHED"
+	}
+
+	return value
 }

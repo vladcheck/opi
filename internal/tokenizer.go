@@ -22,7 +22,7 @@ func NewTokenizer(input string) Tokenizer {
 
 // Tokenize takes source code and turns it into a slice of tokens.
 func (t *Tokenizer) Tokenize() ([]Token, error) {
-	tokens := make([]Token, 0, 2) //nolint:mnd
+	tokens := make([]Token, 0, 2)
 
 	for !t.isEOF() {
 		token, ok := t.match()
@@ -61,13 +61,13 @@ func (t *Tokenizer) match() (Token, bool) {
 	case strings.EqualFold(t.peek(), "+"):
 		return t.matchPlus(), true
 	case strings.EqualFold(t.peek(), "-"):
-		return t.emitSingle(ttMinus), true
+		return t.matchMinus(), true
 	case strings.EqualFold(t.peek(), "*"):
-		return t.emitSingle(ttStar), true
+		return t.matchStar(), true
 	case strings.EqualFold(t.peek(), "%"):
-		return t.emitSingle(ttPercent), true
+		return t.matchPercent(), true
 	case strings.EqualFold(t.peek(), "="):
-		return t.emitSingle(ttEquals), true
+		return t.matchEquals(), true
 	case strings.EqualFold(t.peek(), "("):
 		return t.emitSingle(ttLeftParen), true
 	case strings.EqualFold(t.peek(), ")"):
@@ -87,23 +87,73 @@ func (t *Tokenizer) match() (Token, bool) {
 
 func (t *Tokenizer) matchPlus() Token {
 	next, ok := t.peekNext()
-
 	if !ok {
 		return t.emitSingle(ttPlus)
 	}
 
 	switch {
 	case strings.EqualFold(next, "+"):
-		t.advance()
+		t.advanceTwice()
 
 		return t.emit(ttPlusPlus)
 	case strings.EqualFold(next, "="):
-		t.advance()
+		t.advanceTwice()
 
 		return t.emit(ttPlusEquals)
 	default:
 		return t.emitSingle(ttPlus)
 	}
+}
+
+func (t *Tokenizer) matchMinus() Token {
+	next, ok := t.peekNext()
+	if !ok {
+		return t.emitSingle(ttMinus)
+	}
+
+	switch {
+	case strings.EqualFold(next, "-"):
+		t.advanceTwice()
+
+		return t.emit(ttMinusMinus)
+	case strings.EqualFold(next, "="):
+		t.advanceTwice()
+
+		return t.emit(ttMinusEquals)
+	default:
+		return t.emitSingle(ttMinus)
+	}
+}
+
+func (t *Tokenizer) matchEquals() Token {
+	return t.matchWithEquals(ttEquals, ttEqualsEquals)
+}
+
+func (t *Tokenizer) matchStar() Token {
+	return t.matchWithEquals(ttStar, ttStarEquals)
+}
+
+func (t *Tokenizer) matchPercent() Token {
+	return t.matchWithEquals(ttPercent, ttPercentEquals)
+}
+
+func (t *Tokenizer) matchWithEquals(
+	char TokenType,
+	charEquals TokenType,
+) Token {
+	next, ok := t.peekNext()
+
+	if !ok {
+		return t.emitSingle(char)
+	}
+
+	if strings.EqualFold(next, "=") {
+		t.advanceTwice()
+
+		return t.emit(charEquals)
+	}
+
+	return t.emitSingle(char)
 }
 
 // emit creates a token in range `[t.start:t.current]`, consumes and returns it.
@@ -150,6 +200,11 @@ func (t *Tokenizer) isEOF() bool {
 
 func (t *Tokenizer) isEOL() bool {
 	return !t.isEOF() && strings.EqualFold(t.peek(), "\n")
+}
+
+func (t *Tokenizer) advanceTwice() {
+	t.advance()
+	t.advance()
 }
 
 func (t *Tokenizer) advance() {

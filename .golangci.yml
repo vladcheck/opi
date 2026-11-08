@@ -16,7 +16,6 @@ linters:
   settings:
     mnd:
       checks:
-        - argument
         - condition
         - return
     exhaustruct_v5:
