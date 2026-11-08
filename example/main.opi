@@ -6,6 +6,7 @@
 
 
 // Operators
+!= !        // exclamation
 += ++ +     // plus
 -= -- -     // minus
 *= *        // star

@@ -11,6 +11,8 @@ const (
 	ttNumber                         // literal number
 	ttString                         // literal string
 	ttNull                           // null
+	ttExclamation                    // !
+	ttNotEquals                      // !=
 	ttPlus                           // +
 	ttPlusEquals                     // +=
 	ttPlusPlus                       // ++
@@ -31,8 +33,10 @@ const (
 	ttRightBracket                   // ]
 	ttLeftBrace                      // {
 	ttRightBrace                     // }
-	ttTrue                           // true (literal, case sensitive)
-	ttFalse                          // false (literal, case sensitive)
+	ttTrue                           // true
+	ttFalse                          // false
+	ttAnd                            // and
+	ttOr                             // or
 )
 
 // Token represents a smallest unit of opi language.
@@ -59,6 +63,8 @@ func tokenTypeBySubstring(substring string) (TokenType, bool) {
 	ttKeywordMap := map[string]TokenType{
 		"true":  ttTrue,
 		"false": ttFalse,
+		"and":   ttAnd,
+		"or":    ttOr,
 	}
 	tt, ok := ttKeywordMap[substring]
 
@@ -72,6 +78,8 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttNumber:        "Number",
 		ttString:        "String",
 		ttNull:          "Null",
+		ttExclamation:   "Exclamation",
+		ttNotEquals:     "NotEquals",
 		ttPlus:          "Plus",
 		ttPlusEquals:    "PlusEquals",
 		ttPlusPlus:      "PlusPlus",
@@ -94,6 +102,8 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttRightBrace:    "RightBrace",
 		ttTrue:          "True",
 		ttFalse:         "False",
+		ttAnd:           "And",
+		ttOr:            "Or",
 	}
 
 	value, ok := ttStringMap[tokenType]

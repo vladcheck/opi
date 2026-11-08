@@ -38,7 +38,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 	return tokens, nil
 }
 
-//nolint:cyclop // This function must be a giant switch statement
+//nolint:cyclop,funlen // This function must be a giant switch statement
 func (t *Tokenizer) match() (Token, bool) {
 	switch {
 	case t.isEOL():
@@ -57,6 +57,8 @@ func (t *Tokenizer) match() (Token, bool) {
 		}
 
 		return t.emit(ttNumber), true
+	case t.isPeekMatches("!"):
+		return t.matchExclamation(), true
 	case t.isPeekMatches("+"):
 		return t.matchPlus(), true
 	case t.isPeekMatches("-"):
@@ -86,6 +88,10 @@ func (t *Tokenizer) match() (Token, bool) {
 	default:
 		return Token{}, false
 	}
+}
+
+func (t *Tokenizer) matchExclamation() Token {
+	return t.matchWithEquals(ttExclamation, ttNotEquals)
 }
 
 func (t *Tokenizer) matchPlus() Token {
@@ -216,10 +222,7 @@ func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
 	return t.emit(tt), true
 }
 
-func (t *Tokenizer) matchWithEquals(
-	char TokenType,
-	charEquals TokenType,
-) Token {
+func (t *Tokenizer) matchWithEquals(char TokenType, charEquals TokenType) Token {
 	next, ok := t.peekNext()
 
 	if !ok {
