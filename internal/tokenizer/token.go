@@ -7,6 +7,7 @@ type TokenType int
 
 const (
 	ttEOF           TokenType = iota // \0
+	ttSymbol                         //
 	ttNumber                         // literal number
 	ttString                         // literal string
 	ttNull                           // null
@@ -30,6 +31,8 @@ const (
 	ttRightBracket                   // ]
 	ttLeftBrace                      // {
 	ttRightBrace                     // }
+	ttTrue                           // true (literal, case sensitive)
+	ttFalse                          // false (literal, case sensitive)
 )
 
 // Token represents a smallest unit of opi language.
@@ -52,9 +55,20 @@ func (t Token) String() string {
 	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), t.Value)
 }
 
+func tokenTypeBySubstring(substring string) (TokenType, bool) {
+	ttKeywordMap := map[string]TokenType{
+		"true":  ttTrue,
+		"false": ttFalse,
+	}
+	tt, ok := ttKeywordMap[substring]
+
+	return tt, ok
+}
+
 func tokenTypeToString(tokenType TokenType) string {
 	ttStringMap := map[TokenType]string{
 		ttEOF:           "EOF",
+		ttSymbol:        "Symbol",
 		ttNumber:        "Number",
 		ttString:        "String",
 		ttNull:          "Null",
@@ -78,11 +92,13 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttRightBracket:  "RightBracket",
 		ttLeftBrace:     "LeftBrace",
 		ttRightBrace:    "RightBrace",
+		ttTrue:          "True",
+		ttFalse:         "False",
 	}
 
 	value, ok := ttStringMap[tokenType]
 	if !ok {
-		return "UNMATCHED"
+		return "UNMATCHED (edit tokenTypeToString())"
 	}
 
 	return value

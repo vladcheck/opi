@@ -81,6 +81,8 @@ func (t *Tokenizer) match() (Token, bool) {
 		return t.emitSingle(ttLeftBrace), true
 	case t.isPeekMatches("}"):
 		return t.emitSingle(ttRightBrace), true
+	case isAlpha(t.peek()):
+		return t.matchSymbolOrKeyword()
 	default:
 		return Token{}, false
 	}
@@ -199,6 +201,21 @@ func (t *Tokenizer) matchPercent() Token {
 	return t.matchWithEquals(ttPercent, ttPercentEquals)
 }
 
+func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
+	t.advance()
+
+	for isAlphanumeric(t.peek()) {
+		t.advance()
+	}
+
+	tt, match := tokenTypeBySubstring(t.see())
+	if !match {
+		return t.emit(ttSymbol), true
+	}
+
+	return t.emit(tt), true
+}
+
 func (t *Tokenizer) matchWithEquals(
 	char TokenType,
 	charEquals TokenType,
@@ -246,6 +263,10 @@ func (t *Tokenizer) peekNext() (string, bool) {
 	}
 
 	return string(t.input[t.current+1]), true
+}
+
+func (t *Tokenizer) see() string {
+	return t.input[t.start:t.current]
 }
 
 func (t *Tokenizer) skipWhitespace() {

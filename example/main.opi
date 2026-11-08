@@ -12,3 +12,13 @@
 /= /        // slash
 %= %        // percent
 == =        // equals
+
+// Symbols
+gibberish       // symbol
+i_am_a_symbol_2 // symbol
+3no             // number symbol
+3true           // number true
+
+// Keywords
+true
+false
