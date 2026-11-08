@@ -1,6 +1,10 @@
-+= ++ +
--= -- -
-*= *
-/= /
-%= %
-== =
+
+// Operators
++= ++ +     // plus
+-= -- -     // minus
+*= *        // star
+/= /        // slash
+%= %        // percent
+== =        // equals
+
+///

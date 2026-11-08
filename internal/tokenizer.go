@@ -41,9 +41,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 func (t *Tokenizer) match() (Token, bool) {
 	switch {
 	case t.isEOL():
-		t.line++
-		t.advance()
-		t.consume()
+		t.advanceToNextLine()
 
 		return Token{}, false
 	case isWhitespace(t.peek()):
@@ -65,7 +63,7 @@ func (t *Tokenizer) match() (Token, bool) {
 	case t.isPeekMatch("*"):
 		return t.matchStar(), true
 	case t.isPeekMatch("/"):
-		return t.matchSlash(), true
+		return t.matchSlash()
 	case t.isPeekMatch("%"):
 		return t.matchPercent(), true
 	case t.isPeekMatch("="):
@@ -135,8 +133,27 @@ func (t *Tokenizer) matchStar() Token {
 	return t.matchWithEquals(ttStar, ttStarEquals)
 }
 
-func (t *Tokenizer) matchSlash() Token {
-	return t.matchWithEquals(ttSlash, ttSlashEquals)
+func (t *Tokenizer) matchSlash() (Token, bool) {
+	next, ok := t.peekNext()
+	if !ok {
+		return t.emitSingle(ttSlash), true
+	}
+
+	if strings.EqualFold(next, "/") {
+		t.skipInlineComment()
+
+		return Token{}, false
+	}
+
+	return t.matchWithEquals(ttSlash, ttSlashEquals), true
+}
+
+func (t *Tokenizer) skipInlineComment() {
+	for !t.isEOL() {
+		t.advance()
+	}
+
+	t.advanceToNextLine()
 }
 
 func (t *Tokenizer) matchPercent() Token {
@@ -210,6 +227,12 @@ func (t *Tokenizer) isEOL() bool {
 
 func (t *Tokenizer) isPeekMatch(char string) bool {
 	return strings.EqualFold(t.peek(), char)
+}
+
+func (t *Tokenizer) advanceToNextLine() {
+	t.line++
+	t.advance()
+	t.consume()
 }
 
 func (t *Tokenizer) advanceTwice() {
