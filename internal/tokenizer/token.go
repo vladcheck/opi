@@ -27,12 +27,12 @@ const (
 	ttPercentEquals                  // %=
 	ttEquals                         // =
 	ttEqualsEquals                   // ==
-	ttLeftParen                      // (
-	ttRightParen                     // )
-	ttLeftBracket                    // [
-	ttRightBracket                   // ]
-	ttLeftBrace                      // {
-	ttRightBrace                     // }
+	ttLParen                         // (
+	ttRParen                         // )
+	ttLBracket                       // [
+	ttRBracket                       // ]
+	ttLBrace                         // {
+	ttRBrace                         // }
 	ttTrue                           // true
 	ttFalse                          // false
 	ttAnd                            // and
@@ -94,12 +94,12 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttSlashEquals:   "SlashEquals",
 		ttEquals:        "Equals",
 		ttEqualsEquals:  "EqualsEquals",
-		ttLeftParen:     "LeftParen",
-		ttRightParen:    "RightParen",
-		ttLeftBracket:   "LeftBracket",
-		ttRightBracket:  "RightBracket",
-		ttLeftBrace:     "LeftBrace",
-		ttRightBrace:    "RightBrace",
+		ttLParen:        "LParen",
+		ttRParen:        "RParen",
+		ttLBracket:      "LBracket",
+		ttRBracket:      "RBracket",
+		ttLBrace:        "LBrace",
+		ttRBrace:        "RBrace",
 		ttTrue:          "True",
 		ttFalse:         "False",
 		ttAnd:           "And",

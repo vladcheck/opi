@@ -72,17 +72,17 @@ func (t *Tokenizer) match() (Token, bool) {
 	case t.isPeekMatches("="):
 		return t.matchEquals(), true
 	case t.isPeekMatches("("):
-		return t.emitSingle(ttLeftParen), true
+		return t.emitSingle(ttLParen), true
 	case t.isPeekMatches(")"):
-		return t.emitSingle(ttRightParen), true
+		return t.emitSingle(ttRParen), true
 	case t.isPeekMatches("["):
-		return t.emitSingle(ttLeftBracket), true
+		return t.emitSingle(ttLBracket), true
 	case t.isPeekMatches("]"):
-		return t.emitSingle(ttRightBracket), true
+		return t.emitSingle(ttRBracket), true
 	case t.isPeekMatches("{"):
-		return t.emitSingle(ttLeftBrace), true
+		return t.emitSingle(ttLBrace), true
 	case t.isPeekMatches("}"):
-		return t.emitSingle(ttRightBrace), true
+		return t.emitSingle(ttRBrace), true
 	case IsAlpha(t.peek()):
 		return t.matchSymbolOrKeyword()
 	default:
