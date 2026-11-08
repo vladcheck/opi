@@ -64,6 +64,8 @@ func (t *Tokenizer) match() (Token, bool) {
 		return t.matchMinus(), true
 	case strings.EqualFold(t.peek(), "*"):
 		return t.matchStar(), true
+	case strings.EqualFold(t.peek(), "/"):
+		return t.matchSlash(), true
 	case strings.EqualFold(t.peek(), "%"):
 		return t.matchPercent(), true
 	case strings.EqualFold(t.peek(), "="):
@@ -131,6 +133,10 @@ func (t *Tokenizer) matchEquals() Token {
 
 func (t *Tokenizer) matchStar() Token {
 	return t.matchWithEquals(ttStar, ttStarEquals)
+}
+
+func (t *Tokenizer) matchSlash() Token {
+	return t.matchWithEquals(ttSlash, ttSlashEquals)
 }
 
 func (t *Tokenizer) matchPercent() Token {

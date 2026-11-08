@@ -18,6 +18,8 @@ const (
 	ttMinusMinus                     // --
 	ttStar                           // *
 	ttStarEquals                     // *=
+	ttSlash                          // /
+	ttSlashEquals                    // /=
 	ttPercent                        // %
 	ttPercentEquals                  // %=
 	ttEquals                         // =
@@ -66,6 +68,8 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttStarEquals:    "StarEquals",
 		ttPercent:       "Percent",
 		ttPercentEquals: "PercentEquals",
+		ttSlash:         "Slash",
+		ttSlashEquals:   "SlashEquals",
 		ttEquals:        "Equals",
 		ttEqualsEquals:  "EqualsEquals",
 		ttLeftParen:     "LeftParen",
