@@ -82,6 +82,10 @@ func (t *Tokenizer) match() (Token, bool) {
 		return t.matchPercent(), true
 	case t.isPeekMatches("="):
 		return t.matchEquals(), true
+	case t.isPeekMatches(">"):
+		return t.matchRArrow(), true
+	case t.isPeekMatches("<"):
+		return t.matchLArrow(), true
 	case t.isPeekMatches("("):
 		return t.emitSingle(ttLParen), true
 	case t.isPeekMatches(")"):
@@ -250,6 +254,14 @@ func (t *Tokenizer) skipInlineComment() {
 
 func (t *Tokenizer) matchPercent() Token {
 	return t.matchWithEquals(ttPercent, ttPercentEquals)
+}
+
+func (t *Tokenizer) matchRArrow() Token {
+	return t.matchWithEquals(ttRArrow, ttMoreThanOrEqual)
+}
+
+func (t *Tokenizer) matchLArrow() Token {
+	return t.matchWithEquals(ttLArrow, ttLessThanOrEqual)
 }
 
 func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {

@@ -14,6 +14,11 @@
 /= /        // slash
 %= %        // percent
 == =        // equals
+> >= < <=   // comparisons
+
+[] // Square brackets
+() // Brackets
+{} // Braces
 
 // Literals
 ""              // empty string
