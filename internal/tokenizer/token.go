@@ -14,6 +14,9 @@ const (
 	ttNumber                         // literal number
 	ttString                         // literal string
 	ttNull                           // null
+	ttDot                            // .
+	ttComma                          // ,
+	ttColon                          // :
 	ttDoubleQuote                    // "
 	ttExclamation                    // !
 	ttNotEquals                      // !=
@@ -112,6 +115,9 @@ func tokenTypeToString(tokenType TokenType) string {
 		ttNumber:        "Number",
 		ttString:        "String",
 		ttNull:          "Null",
+		ttDot:           "Dot",
+		ttComma:         "Comma",
+		ttColon:         "Colon",
 		ttDoubleQuote:   "DoubleQuote",
 		ttExclamation:   "Exclamation",
 		ttNotEquals:     "NotEquals",

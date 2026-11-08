@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"log"
 	"strings"
 )
 
@@ -61,6 +62,12 @@ func (t *Tokenizer) match() (Token, bool) {
 		return t.emit(ttNumber), true
 	case t.isPeekMatches("\""):
 		return t.matchString(), true
+	case t.isPeekMatches("."):
+		return t.emitSingle(ttDot), true
+	case t.isPeekMatches(","):
+		return t.emitSingle(ttComma), true
+	case t.isPeekMatches(":"):
+		return t.emitSingle(ttColon), true
 	case t.isPeekMatches("!"):
 		return t.matchExclamation(), true
 	case t.isPeekMatches("+"):
@@ -90,6 +97,8 @@ func (t *Tokenizer) match() (Token, bool) {
 	case IsAlpha(t.peek()):
 		return t.matchSymbolOrKeyword()
 	default:
+		log.Fatalf("Can't lex: %q", t.peek())
+
 		return Token{}, false
 	}
 }
