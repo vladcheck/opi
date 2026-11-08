@@ -14,6 +14,11 @@ linters:
           - revive
         text: "package-comments: should have a package comment"
   settings:
+    varnamelen:
+      max-distance: 10
+      ignore-type-assert-ok: true
+      ignore-map-index-ok: true
+      ignore-chan-recv-ok: true
     mnd:
       checks:
         - condition

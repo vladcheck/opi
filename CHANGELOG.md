@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning].
 - Lexer supports:
   - integers
   - line information for each token
+  - inline, multiline and nested multiline comments
 
 <!-- Links -->
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/

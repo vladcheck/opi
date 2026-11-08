@@ -6,17 +6,18 @@ import (
 
 // Tokenizer is responsible for taking source code and turning it into a slice of tokens.
 type Tokenizer struct {
-	input                string
-	start, current, line int
+	input                              string
+	start, current, line, commentDepth int
 }
 
 // NewTokenizer creates a new Tokenizer.
 func NewTokenizer(input string) Tokenizer {
 	return Tokenizer{
-		input:   input,
-		start:   0,
-		current: 0,
-		line:    1,
+		input:        input,
+		start:        0,
+		current:      0,
+		line:         1,
+		commentDepth: 0,
 	}
 }
 
@@ -56,29 +57,29 @@ func (t *Tokenizer) match() (Token, bool) {
 		}
 
 		return t.emit(ttNumber), true
-	case t.isPeekMatch("+"):
+	case t.isPeekMatches("+"):
 		return t.matchPlus(), true
-	case t.isPeekMatch("-"):
+	case t.isPeekMatches("-"):
 		return t.matchMinus(), true
-	case t.isPeekMatch("*"):
+	case t.isPeekMatches("*"):
 		return t.matchStar(), true
-	case t.isPeekMatch("/"):
+	case t.isPeekMatches("/"):
 		return t.matchSlash()
-	case t.isPeekMatch("%"):
+	case t.isPeekMatches("%"):
 		return t.matchPercent(), true
-	case t.isPeekMatch("="):
+	case t.isPeekMatches("="):
 		return t.matchEquals(), true
-	case t.isPeekMatch("("):
+	case t.isPeekMatches("("):
 		return t.emitSingle(ttLeftParen), true
-	case t.isPeekMatch(")"):
+	case t.isPeekMatches(")"):
 		return t.emitSingle(ttRightParen), true
-	case t.isPeekMatch("["):
+	case t.isPeekMatches("["):
 		return t.emitSingle(ttLeftBracket), true
-	case t.isPeekMatch("]"):
+	case t.isPeekMatches("]"):
 		return t.emitSingle(ttRightBracket), true
-	case t.isPeekMatch("{"):
+	case t.isPeekMatches("{"):
 		return t.emitSingle(ttLeftBrace), true
-	case t.isPeekMatch("}"):
+	case t.isPeekMatches("}"):
 		return t.emitSingle(ttRightBrace), true
 	default:
 		return Token{}, false
@@ -143,9 +144,47 @@ func (t *Tokenizer) matchSlash() (Token, bool) {
 		t.skipInlineComment()
 
 		return Token{}, false
+	} else if strings.EqualFold(next, "*") {
+		t.advanceTwice()
+		t.commentDepth = 1
+		t.skipMultilineComments()
+
+		return Token{}, false
 	}
 
 	return t.matchWithEquals(ttSlash, ttSlashEquals), true
+}
+
+func (t *Tokenizer) skipMultilineComments() {
+	for t.commentDepth > 0 {
+		if t.isPeekMatches("\n") {
+			t.advanceToNextLine()
+
+			continue
+		}
+
+		matches, ok := t.isTwoCharsMatch("/", "*")
+		if !ok {
+			return
+		}
+
+		if matches {
+			t.commentDepth++
+		}
+
+		matches, ok = t.isTwoCharsMatch("*", "/")
+		if !ok {
+			return
+		}
+
+		if matches {
+			t.commentDepth--
+		}
+
+		t.advance()
+	}
+
+	t.advanceTwice()
 }
 
 func (t *Tokenizer) skipInlineComment() {
@@ -222,11 +261,24 @@ func (t *Tokenizer) isEOF() bool {
 }
 
 func (t *Tokenizer) isEOL() bool {
-	return !t.isEOF() && t.isPeekMatch("\n")
+	return !t.isEOF() && t.isPeekMatches("\n")
 }
 
-func (t *Tokenizer) isPeekMatch(char string) bool {
+func (t *Tokenizer) isPeekMatches(char string) bool {
 	return strings.EqualFold(t.peek(), char)
+}
+
+func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
+	if t.isPeekMatches(ch1) {
+		next, ok := t.peekNext()
+		if !ok {
+			return false, false
+		}
+
+		return strings.EqualFold(next, ch2), true
+	}
+
+	return false, true
 }
 
 func (t *Tokenizer) advanceToNextLine() {
