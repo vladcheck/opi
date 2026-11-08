@@ -12,8 +12,8 @@ func DebugPrintAllTokens(tokens []Token) {
 	}
 }
 
-//nolint:unused
-func (t *Tokenizer) debugPrint() {
+// DebugPrintTokenizer prints current state of the Tokenizer instance.
+func (t *Tokenizer) DebugPrintTokenizer() {
 	const sleepTime = 200 * time.Millisecond
 
 	next, _ := t.peekNext()

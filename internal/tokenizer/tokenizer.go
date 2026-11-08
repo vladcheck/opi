@@ -45,14 +45,14 @@ func (t *Tokenizer) match() (Token, bool) {
 		t.advanceToNextLine()
 
 		return Token{}, false
-	case isWhitespace(t.peek()):
+	case IsWhitespace(t.peek()):
 		t.skipWhitespace()
 
 		return Token{}, false
-	case isDigit(t.peek()):
+	case IsNumeric(t.peek()):
 		t.advance()
 
-		for isDigit(t.peek()) {
+		for IsNumeric(t.peek()) {
 			t.advance()
 		}
 
@@ -81,7 +81,7 @@ func (t *Tokenizer) match() (Token, bool) {
 		return t.emitSingle(ttLeftBrace), true
 	case t.isPeekMatches("}"):
 		return t.emitSingle(ttRightBrace), true
-	case isAlpha(t.peek()):
+	case IsAlpha(t.peek()):
 		return t.matchSymbolOrKeyword()
 	default:
 		return Token{}, false
@@ -204,7 +204,7 @@ func (t *Tokenizer) matchPercent() Token {
 func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
 	t.advance()
 
-	for isAlphanumeric(t.peek()) {
+	for IsAlphanumeric(t.peek()) {
 		t.advance()
 	}
 
@@ -270,7 +270,7 @@ func (t *Tokenizer) see() string {
 }
 
 func (t *Tokenizer) skipWhitespace() {
-	for isWhitespace(t.peek()) {
+	for IsWhitespace(t.peek()) {
 		t.advance()
 	}
 
