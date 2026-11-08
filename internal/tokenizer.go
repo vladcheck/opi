@@ -37,6 +37,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 	return tokens, nil
 }
 
+//nolint:cyclop // This function must be a giant switch statement
 func (t *Tokenizer) match() (Token, bool) {
 	// fmt.Printf("start: '%v' current: '%v' peek: '%s'\n", t.start, t.current, t.peek())
 	switch {
@@ -55,19 +56,37 @@ func (t *Tokenizer) match() (Token, bool) {
 			t.advance()
 		}
 
-		token := newToken(ttNumber, t.line, t.input[t.start:t.current])
-		t.consume()
-
-		return token, true
+		return t.emit(ttNumber), true
 	case strings.EqualFold(t.peek(), "+"):
-		token := newToken(ttPlus, t.line, "+")
-		t.advance()
-		t.consume()
-
-		return token, true
+		return t.emitSingle(ttMinus, "+"), true
+	case strings.EqualFold(t.peek(), "-"):
+		return t.emitSingle(ttMinus, "-"), true
+	case strings.EqualFold(t.peek(), "*"):
+		return t.emitSingle(ttStar, "*"), true
+	case strings.EqualFold(t.peek(), "%"):
+		return t.emitSingle(ttPercent, "%"), true
+	case strings.EqualFold(t.peek(), "("):
+		return t.emitSingle(ttLeftParen, "("), true
+	case strings.EqualFold(t.peek(), ")"):
+		return t.emitSingle(ttRightParen, ")"), true
 	default:
 		return Token{}, false
 	}
+}
+
+func (t *Tokenizer) emit(tt TokenType) Token {
+	token := newToken(tt, t.line, t.input[t.start:t.current])
+	t.consume()
+
+	return token
+}
+
+func (t *Tokenizer) emitSingle(tt TokenType, char string) Token {
+	token := newToken(tt, t.line, char)
+	t.advance()
+	t.consume()
+
+	return token
 }
 
 func (t *Tokenizer) peek() string {

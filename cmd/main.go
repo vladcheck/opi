@@ -85,11 +85,15 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	for _, t := range tokens {
-		logger.Printf("%d: '%v'\n", t.Line, t.Value)
-	}
+	debugPrintAllTokens(tokens)
 
 	return nil
+}
+
+func debugPrintAllTokens(tokens []internal.Token) {
+	for _, t := range tokens {
+		logger.Printf("%s\n", t.String())
+	}
 }
 
 func usage() {
