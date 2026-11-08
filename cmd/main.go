@@ -16,7 +16,6 @@ import (
 const extension = ".opi"
 
 var (
-	logger    = log.New(os.Stdout, "", 0)
 	errLogger = log.New(os.Stderr, "ERROR: ", 0)
 
 	ErrPathRequired   = errors.New("filepath is not specified")
@@ -85,15 +84,9 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	debugPrintAllTokens(tokens)
+	tok.DebugPrintAllTokens(tokens)
 
 	return nil
-}
-
-func debugPrintAllTokens(tokens []tok.Token) {
-	for _, t := range tokens {
-		logger.Printf("%s\n", t.String())
-	}
 }
 
 func usage() {

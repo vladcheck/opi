@@ -2,19 +2,23 @@ package tokenizer
 
 import (
 	"log"
-	"os"
 	"time"
 )
 
+// DebugPrintAllTokens logs all tokens of []Token, each token on a new line and prettified.
+func DebugPrintAllTokens(tokens []Token) {
+	for _, t := range tokens {
+		log.Printf("%s\n", t.String())
+	}
+}
+
 //nolint:unused
 func (t *Tokenizer) debugPrint() {
-	debugLogger := log.New(os.Stdout, "DEBUG", 0)
-
 	const sleepTime = 200 * time.Millisecond
 
 	next, _ := t.peekNext()
 
-	debugLogger.Printf("i: %d j: %d peek: %q next: %q\n", t.start, t.current, t.peek(), next)
+	log.Printf("i: %d j: %d peek: %q next: %q\n", t.start, t.current, t.peek(), next)
 
 	time.Sleep(sleepTime)
 }
