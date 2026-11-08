@@ -39,9 +39,8 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 
 //nolint:cyclop // This function must be a giant switch statement
 func (t *Tokenizer) match() (Token, bool) {
-	// fmt.Printf("start: '%v' current: '%v' peek: '%s'\n", t.start, t.current, t.peek())
 	switch {
-	case strings.EqualFold(t.peek(), "\n"):
+	case t.isEOL():
 		t.line++
 		t.advance()
 		t.consume()
@@ -52,19 +51,23 @@ func (t *Tokenizer) match() (Token, bool) {
 
 		return Token{}, false
 	case isDigit(t.peek()):
+		t.advance()
+
 		for isDigit(t.peek()) {
 			t.advance()
 		}
 
 		return t.emit(ttNumber), true
 	case strings.EqualFold(t.peek(), "+"):
-		return t.emitSingle(ttPlus), true
+		return t.matchPlus(), true
 	case strings.EqualFold(t.peek(), "-"):
 		return t.emitSingle(ttMinus), true
 	case strings.EqualFold(t.peek(), "*"):
 		return t.emitSingle(ttStar), true
 	case strings.EqualFold(t.peek(), "%"):
 		return t.emitSingle(ttPercent), true
+	case strings.EqualFold(t.peek(), "="):
+		return t.emitSingle(ttEquals), true
 	case strings.EqualFold(t.peek(), "("):
 		return t.emitSingle(ttLeftParen), true
 	case strings.EqualFold(t.peek(), ")"):
@@ -82,6 +85,28 @@ func (t *Tokenizer) match() (Token, bool) {
 	}
 }
 
+func (t *Tokenizer) matchPlus() Token {
+	next, ok := t.peekNext()
+
+	if !ok {
+		return t.emitSingle(ttPlus)
+	}
+
+	switch {
+	case strings.EqualFold(next, "+"):
+		t.advance()
+
+		return t.emit(ttPlusPlus)
+	case strings.EqualFold(next, "="):
+		t.advance()
+
+		return t.emit(ttPlusEquals)
+	default:
+		return t.emitSingle(ttPlus)
+	}
+}
+
+// emit creates a token in range `[t.start:t.current]`, consumes and returns it.
 func (t *Tokenizer) emit(tt TokenType) Token {
 	token := newToken(tt, t.line, t.input[t.start:t.current])
 	t.consume()
@@ -90,11 +115,9 @@ func (t *Tokenizer) emit(tt TokenType) Token {
 }
 
 func (t *Tokenizer) emitSingle(tt TokenType) Token {
-	token := newToken(tt, t.line, t.peek())
 	t.advance()
-	t.consume()
 
-	return token
+	return t.emit(tt)
 }
 
 func (t *Tokenizer) peek() string {
@@ -105,13 +128,13 @@ func (t *Tokenizer) peek() string {
 	return string(t.input[t.current])
 }
 
-// func (t *Tokenizer) peekNext() string {
-// 	if t.isEOF() || t.current+1 >= len(t.input) {
-// 		return ""
-// 	}
+func (t *Tokenizer) peekNext() (string, bool) {
+	if t.current+1 >= len(t.input) {
+		return "", false
+	}
 
-// 	return string(t.input[t.current+1])
-// }
+	return string(t.input[t.current+1]), true
+}
 
 func (t *Tokenizer) skipWhitespace() {
 	for isWhitespace(t.peek()) {
@@ -123,6 +146,10 @@ func (t *Tokenizer) skipWhitespace() {
 
 func (t *Tokenizer) isEOF() bool {
 	return t.current >= len(t.input)
+}
+
+func (t *Tokenizer) isEOL() bool {
+	return !t.isEOF() && strings.EqualFold(t.peek(), "\n")
 }
 
 func (t *Tokenizer) advance() {

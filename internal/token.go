@@ -11,9 +11,12 @@ const (
 	ttString                        // literal string
 	ttNull                          // null
 	ttPlus                          // +
+	ttPlusEquals                    // +=
+	ttPlusPlus                      // ++
 	ttMinus                         // -
 	ttStar                          // *
 	ttPercent                       // %
+	ttEquals                        // =
 	ttLeftParen                     // (
 	ttRightParen                    // )
 	ttLeftBracket                   // [
