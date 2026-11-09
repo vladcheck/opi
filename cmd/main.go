@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"vladcheck/opi/internal/parser"
 	"vladcheck/opi/internal/tokenizer"
 )
 
@@ -84,7 +85,16 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	tokenizer.DebugPrintAllTokens(tokens)
+	// tokenizer.DebugPrintAllTokens(tokens)
+
+	p := parser.NewParser(tokens)
+
+	ast, err := p.Parse()
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	parser.DebugPrintAST(ast)
 
 	return nil
 }
