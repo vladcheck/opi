@@ -39,7 +39,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 		}
 	}
 
-	t.tokens = append(t.tokens, newToken(ttEOF, t.line, t.col))
+	t.tokens = append(t.tokens, newToken(TtEOF, t.line, t.col))
 
 	return t.tokens, nil
 }
@@ -62,15 +62,15 @@ func (t *Tokenizer) match() (Token, bool) {
 			t.advance()
 		}
 
-		return t.emitWithValue(ttNumber), true
+		return t.emitWithValue(TtNumber), true
 	case t.isPeekMatches("\""):
 		return t.matchString(), true
 	case t.isPeekMatches("."):
-		return t.emitSingle(ttDot), true
+		return t.emitSingle(TtDot), true
 	case t.isPeekMatches(","):
-		return t.emitSingle(ttComma), true
+		return t.emitSingle(TtComma), true
 	case t.isPeekMatches(":"):
-		return t.emitSingle(ttColon), true
+		return t.emitSingle(TtColon), true
 	case t.isPeekMatches("!"):
 		return t.matchExclamation(), true
 	case t.isPeekMatches("+"):
@@ -90,17 +90,17 @@ func (t *Tokenizer) match() (Token, bool) {
 	case t.isPeekMatches("<"):
 		return t.matchLArrow(), true
 	case t.isPeekMatches("("):
-		return t.emitSingle(ttLParen), true
+		return t.emitSingle(TtLParen), true
 	case t.isPeekMatches(")"):
-		return t.emitSingle(ttRParen), true
+		return t.emitSingle(TtRParen), true
 	case t.isPeekMatches("["):
-		return t.emitSingle(ttLBracket), true
+		return t.emitSingle(TtLBracket), true
 	case t.isPeekMatches("]"):
-		return t.emitSingle(ttRBracket), true
+		return t.emitSingle(TtRBracket), true
 	case t.isPeekMatches("{"):
-		return t.emitSingle(ttLBrace), true
+		return t.emitSingle(TtLBrace), true
 	case t.isPeekMatches("}"):
-		return t.emitSingle(ttRBrace), true
+		return t.emitSingle(TtRBrace), true
 	case IsAlpha(t.peek()):
 		return t.matchSymbolOrKeyword()
 	default:
@@ -139,65 +139,65 @@ func (t *Tokenizer) matchString() Token {
 
 	t.advance()
 
-	return t.emitWithValue(ttString)
+	return t.emitWithValue(TtString)
 }
 
 func (t *Tokenizer) matchExclamation() Token {
-	return t.matchWithEquals(ttExclamation, ttNotEquals)
+	return t.matchWithEquals(TtExclamation, TtNotEquals)
 }
 
 func (t *Tokenizer) matchPlus() Token {
 	next, ok := t.peekNext()
 	if !ok {
-		return t.emitSingle(ttPlus)
+		return t.emitSingle(TtPlus)
 	}
 
 	switch {
 	case strings.EqualFold(next, "+"):
 		t.advanceTwice()
 
-		return t.emit(ttPlusPlus)
+		return t.emit(TtPlusPlus)
 	case strings.EqualFold(next, "="):
 		t.advanceTwice()
 
-		return t.emit(ttPlusEquals)
+		return t.emit(TtPlusEquals)
 	default:
-		return t.emitSingle(ttPlus)
+		return t.emitSingle(TtPlus)
 	}
 }
 
 func (t *Tokenizer) matchMinus() Token {
 	next, ok := t.peekNext()
 	if !ok {
-		return t.emitSingle(ttMinus)
+		return t.emitSingle(TtMinus)
 	}
 
 	switch {
 	case strings.EqualFold(next, "-"):
 		t.advanceTwice()
 
-		return t.emit(ttMinusMinus)
+		return t.emit(TtMinusMinus)
 	case strings.EqualFold(next, "="):
 		t.advanceTwice()
 
-		return t.emit(ttMinusEquals)
+		return t.emit(TtMinusEquals)
 	default:
-		return t.emitSingle(ttMinus)
+		return t.emitSingle(TtMinus)
 	}
 }
 
 func (t *Tokenizer) matchEquals() Token {
-	return t.matchWithEquals(ttEquals, ttEqualsEquals)
+	return t.matchWithEquals(TtEquals, TtEqualsEquals)
 }
 
 func (t *Tokenizer) matchStar() Token {
-	return t.matchWithEquals(ttStar, ttStarEquals)
+	return t.matchWithEquals(TtStar, TtStarEquals)
 }
 
 func (t *Tokenizer) matchSlash() (Token, bool) {
 	next, ok := t.peekNext()
 	if !ok {
-		return t.emitSingle(ttSlash), true
+		return t.emitSingle(TtSlash), true
 	}
 
 	if strings.EqualFold(next, "/") {
@@ -210,7 +210,7 @@ func (t *Tokenizer) matchSlash() (Token, bool) {
 		return Token{}, false
 	}
 
-	return t.matchWithEquals(ttSlash, ttSlashEquals), true
+	return t.matchWithEquals(TtSlash, TtSlashEquals), true
 }
 
 func (t *Tokenizer) skipMultilineComments() {
@@ -268,15 +268,15 @@ func (t *Tokenizer) skipInlineComment() {
 }
 
 func (t *Tokenizer) matchPercent() Token {
-	return t.matchWithEquals(ttPercent, ttPercentEquals)
+	return t.matchWithEquals(TtPercent, TtPercentEquals)
 }
 
 func (t *Tokenizer) matchRArrow() Token {
-	return t.matchWithEquals(ttRArrow, ttMoreThanOrEqual)
+	return t.matchWithEquals(TtRArrow, TtMoreThanOrEqual)
 }
 
 func (t *Tokenizer) matchLArrow() Token {
-	return t.matchWithEquals(ttLArrow, ttLessThanOrEqual)
+	return t.matchWithEquals(TtLArrow, TtLessThanOrEqual)
 }
 
 func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
@@ -286,14 +286,14 @@ func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
 		t.advance()
 	}
 
-	tt, match := tokenTypeBySubstring(t.see())
+	Tt, match := tokenTypeBySubstring(t.see())
 	if !match {
 		// It is a symbol
-		return t.emitWithValue(ttSymbol), true
+		return t.emitWithValue(TtSymbol), true
 	}
 
 	// It is a keyword
-	return t.emit(tt), true
+	return t.emit(Tt), true
 }
 
 func (t *Tokenizer) matchWithEquals(char TokenType, charEquals TokenType) Token {
@@ -388,7 +388,7 @@ func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
 
 func (t *Tokenizer) advanceToNextLine() {
 	if !t.inComment {
-		t.tokens = append(t.tokens, newToken(ttNewLine, t.line, t.col))
+		t.tokens = append(t.tokens, newToken(TtNewLine, t.line, t.col))
 	}
 
 	t.resetColumn()

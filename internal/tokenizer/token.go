@@ -9,59 +9,112 @@ import (
 type TokenType int
 
 const (
-	ttEOF             TokenType = iota // \0
-	ttNewLine                          // \n
-	ttSymbol                           //
-	ttNumber                           // literal number
-	ttString                           // literal string
-	ttNull                             // null
-	ttDot                              // .
-	ttComma                            // ,
-	ttColon                            // :
-	ttLArrow                           // <
-	ttLessThanOrEqual                  // <=
-	ttRArrow                           // >
-	ttMoreThanOrEqual                  // >=
-	ttDoubleQuote                      // "
-	ttExclamation                      // !
-	ttNotEquals                        // !=
-	ttPlus                             // +
-	ttPlusEquals                       // +=
-	ttPlusPlus                         // ++
-	ttMinus                            // -
-	ttMinusEquals                      // -=
-	ttMinusMinus                       // --
-	ttStar                             // *
-	ttStarEquals                       // *=
-	ttSlash                            // /
-	ttSlashEquals                      // /=
-	ttPercent                          // %
-	ttPercentEquals                    // %=
-	ttEquals                           // =
-	ttEqualsEquals                     // ==
-	ttLParen                           // (
-	ttRParen                           // )
-	ttLBracket                         // [
-	ttRBracket                         // ]
-	ttLBrace                           // {
-	ttRBrace                           // }
-	ttTrue                             // true
-	ttFalse                            // false
-	ttAnd                              // and
-	ttOr                               // or
-	ttIf                               // if
-	ttElse                             // else
-	ttSwitch                           // switch
-	ttFall                             // fall. Works like fallthrough in Golang
-	ttBreak                            // break
-	ttContinue                         // continue
-	ttFunc                             // func
-	ttRet                              // ret
-	ttDefer                            // defer
-	ttMut                              // mut. Taken inspiration from Rust
-	ttFor                              // for
-	ttWhile                            // while
-	ttDo                               // do
+	// TtEOF \0.
+	TtEOF TokenType = iota
+	// TtNewLine is equal to \n.
+	TtNewLine
+	// TtSymbol represents an identifier.
+	TtSymbol
+	// TtNumber is a literal number.
+	TtNumber
+	// TtString is a literal string.
+	TtString
+	// TtNull represents null.
+	TtNull
+	// TtDot is the . symbol.
+	TtDot
+	// TtComma is the , symbol.
+	TtComma
+	// TtColon is the : symbol.
+	TtColon
+	// TtLArrow is the < symbol.
+	TtLArrow
+	// TtLessThanOrEqual is the <= operator.
+	TtLessThanOrEqual
+	// TtRArrow is the > symbol.
+	TtRArrow
+	// TtMoreThanOrEqual is the >= operator.
+	TtMoreThanOrEqual
+	// TtDoubleQuote is the " symbol.
+	TtDoubleQuote
+	// TtExclamation is the ! symbol.
+	TtExclamation
+	// TtNotEquals is the != operator.
+	TtNotEquals
+	// TtPlus is the + operator.
+	TtPlus
+	// TtPlusEquals is the += operator.
+	TtPlusEquals
+	// TtPlusPlus is the ++ operator.
+	TtPlusPlus
+	// TtMinus is the - operator.
+	TtMinus
+	// TtMinusEquals is the -= operator.
+	TtMinusEquals
+	// TtMinusMinus is the -- operator.
+	TtMinusMinus
+	// TtStar is the * operator.
+	TtStar
+	// TtStarEquals is the *= operator.
+	TtStarEquals
+	// TtSlash is the / operator.
+	TtSlash
+	// TtSlashEquals is the /= operator.
+	TtSlashEquals
+	// TtPercent is the % operator.
+	TtPercent
+	// TtPercentEquals is the %= operator.
+	TtPercentEquals
+	// TtEquals is the = operator.
+	TtEquals
+	// TtEqualsEquals is the == operator.
+	TtEqualsEquals
+	// TtLParen is the ( symbol.
+	TtLParen
+	// TtRParen is the ) symbol.
+	TtRParen
+	// TtLBracket is the [ symbol.
+	TtLBracket
+	// TtRBracket is the ] symbol.
+	TtRBracket
+	// TtLBrace is the { symbol.
+	TtLBrace
+	// TtRBrace is the } symbol.
+	TtRBrace
+	// TtTrue is the true keyword.
+	TtTrue
+	// TtFalse is the false keyword.
+	TtFalse
+	// TtAnd is the and keyword.
+	TtAnd
+	// TtOr is the or keyword.
+	TtOr
+	// TtIf is the if keyword.
+	TtIf
+	// TtElse is the else keyword.
+	TtElse
+	// TtSwitch is the switch keyword.
+	TtSwitch
+	// TtFall works like fallthrough in Go.
+	TtFall
+	// TtBreak is the break keyword.
+	TtBreak
+	// TtContinue is the continue keyword.
+	TtContinue
+	// TtFunc is the func keyword.
+	TtFunc
+	// TtRet is the ret keyword.
+	TtRet
+	// TtDefer is the defer keyword.
+	TtDefer
+	// TtMut is the mut keyword, inspired by Rust.
+	TtMut
+	// TtFor is the for keyword.
+	TtFor
+	// TtWhile is the while keyword.
+	TtWhile
+	// TtDo is the do keyword.
+	TtDo
 )
 
 // Token represents a smallest unit of opi language.
@@ -107,88 +160,88 @@ func (t Token) position() string {
 }
 
 func tokenTypeBySubstring(substring string) (TokenType, bool) {
-	ttKeywordMap := map[string]TokenType{
-		"true":     ttTrue,
-		"false":    ttFalse,
-		"and":      ttAnd,
-		"or":       ttOr,
-		"if":       ttIf,       // if
-		"else":     ttElse,     // else
-		"switch":   ttSwitch,   // switch
-		"fall":     ttFall,     // fall. Works like fallthrough in Golang
-		"break":    ttBreak,    // break
-		"continue": ttContinue, // continue
-		"func":     ttFunc,     // func
-		"ret":      ttRet,      // ret
-		"defer":    ttDefer,    // defer
-		"mut":      ttMut,      // mut. Taken inspiration from Rust
-		"for":      ttFor,      // for
-		"while":    ttWhile,    // while
-		"do":       ttDo,       // do
+	TtKeywordMap := map[string]TokenType{
+		"true":     TtTrue,
+		"false":    TtFalse,
+		"and":      TtAnd,
+		"or":       TtOr,
+		"if":       TtIf,       // if
+		"else":     TtElse,     // else
+		"switch":   TtSwitch,   // switch
+		"fall":     TtFall,     // fall. Works like fallthrough in Golang
+		"break":    TtBreak,    // break
+		"continue": TtContinue, // continue
+		"func":     TtFunc,     // func
+		"ret":      TtRet,      // ret
+		"defer":    TtDefer,    // defer
+		"mut":      TtMut,      // mut. Taken inspiration from Rust
+		"for":      TtFor,      // for
+		"while":    TtWhile,    // while
+		"do":       TtDo,       // do
 	}
-	tt, ok := ttKeywordMap[substring]
+	Tt, ok := TtKeywordMap[substring]
 
-	return tt, ok
+	return Tt, ok
 }
 
 func tokenTypeToString(tokenType TokenType) string {
-	ttStringMap := map[TokenType]string{
-		ttEOF:             "EOF",
-		ttNewLine:         "NewLine",
-		ttSymbol:          "Symbol",
-		ttNumber:          "Number",
-		ttString:          "String",
-		ttNull:            "Null",
-		ttDot:             "Dot",
-		ttComma:           "Comma",
-		ttColon:           "Colon",
-		ttLArrow:          "LArrow",          // <
-		ttLessThanOrEqual: "LessThanOrEqual", // <=
-		ttRArrow:          "RArrow",          // >
-		ttMoreThanOrEqual: "MoreThanOrEqual", // >=
-		ttDoubleQuote:     "DoubleQuote",
-		ttExclamation:     "Exclamation",
-		ttNotEquals:       "NotEquals",
-		ttPlus:            "Plus",
-		ttPlusEquals:      "PlusEquals",
-		ttPlusPlus:        "PlusPlus",
-		ttMinus:           "Minus",
-		ttMinusEquals:     "MinusEquals",
-		ttMinusMinus:      "MinusMinus",
-		ttStar:            "Star",
-		ttStarEquals:      "StarEquals",
-		ttPercent:         "Percent",
-		ttPercentEquals:   "PercentEquals",
-		ttSlash:           "Slash",
-		ttSlashEquals:     "SlashEquals",
-		ttEquals:          "Equals",
-		ttEqualsEquals:    "EqualsEquals",
-		ttLParen:          "LParen",
-		ttRParen:          "RParen",
-		ttLBracket:        "LBracket",
-		ttRBracket:        "RBracket",
-		ttLBrace:          "LBrace",
-		ttRBrace:          "RBrace",
-		ttTrue:            "True",
-		ttFalse:           "False",
-		ttAnd:             "And",
-		ttOr:              "Or",
-		ttIf:              "If",       // if
-		ttElse:            "Else",     // else
-		ttSwitch:          "Switch",   // switch
-		ttFall:            "Fall",     // fall. Works like fallthrough in Golang
-		ttBreak:           "Break",    // break
-		ttContinue:        "Continue", // continue
-		ttFunc:            "Func",     // func
-		ttRet:             "Ret",      // ret
-		ttDefer:           "Defer",    // defer
-		ttMut:             "Mut",      // mut. Taken inspiration from Rust
-		ttFor:             "For",      // for
-		ttWhile:           "While",    // while
-		ttDo:              "Do",       // do
+	TtStringMap := map[TokenType]string{
+		TtEOF:             "EOF",
+		TtNewLine:         "NewLine",
+		TtSymbol:          "Symbol",
+		TtNumber:          "Number",
+		TtString:          "String",
+		TtNull:            "Null",
+		TtDot:             "Dot",
+		TtComma:           "Comma",
+		TtColon:           "Colon",
+		TtLArrow:          "LArrow",          // <
+		TtLessThanOrEqual: "LessThanOrEqual", // <=
+		TtRArrow:          "RArrow",          // >
+		TtMoreThanOrEqual: "MoreThanOrEqual", // >=
+		TtDoubleQuote:     "DoubleQuote",
+		TtExclamation:     "Exclamation",
+		TtNotEquals:       "NotEquals",
+		TtPlus:            "Plus",
+		TtPlusEquals:      "PlusEquals",
+		TtPlusPlus:        "PlusPlus",
+		TtMinus:           "Minus",
+		TtMinusEquals:     "MinusEquals",
+		TtMinusMinus:      "MinusMinus",
+		TtStar:            "Star",
+		TtStarEquals:      "StarEquals",
+		TtPercent:         "Percent",
+		TtPercentEquals:   "PercentEquals",
+		TtSlash:           "Slash",
+		TtSlashEquals:     "SlashEquals",
+		TtEquals:          "Equals",
+		TtEqualsEquals:    "EqualsEquals",
+		TtLParen:          "LParen",
+		TtRParen:          "RParen",
+		TtLBracket:        "LBracket",
+		TtRBracket:        "RBracket",
+		TtLBrace:          "LBrace",
+		TtRBrace:          "RBrace",
+		TtTrue:            "True",
+		TtFalse:           "False",
+		TtAnd:             "And",
+		TtOr:              "Or",
+		TtIf:              "If",       // if
+		TtElse:            "Else",     // else
+		TtSwitch:          "Switch",   // switch
+		TtFall:            "Fall",     // fall. Works like fallthrough in Golang
+		TtBreak:           "Break",    // break
+		TtContinue:        "Continue", // continue
+		TtFunc:            "Func",     // func
+		TtRet:             "Ret",      // ret
+		TtDefer:           "Defer",    // defer
+		TtMut:             "Mut",      // mut. Taken inspiration from Rust
+		TtFor:             "For",      // for
+		TtWhile:           "While",    // while
+		TtDo:              "Do",       // do
 	}
 
-	value, ok := ttStringMap[tokenType]
+	value, ok := TtStringMap[tokenType]
 	if !ok {
 		return "UNMATCHED (edit tokenTypeToString())"
 	}
