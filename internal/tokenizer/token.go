@@ -10,6 +10,7 @@ type TokenType int
 
 const (
 	ttEOF             TokenType = iota // \0
+	ttNewLine                          // \n
 	ttSymbol                           //
 	ttNumber                           // literal number
 	ttString                           // literal string
@@ -115,6 +116,7 @@ func tokenTypeBySubstring(substring string) (TokenType, bool) {
 func tokenTypeToString(tokenType TokenType) string {
 	ttStringMap := map[TokenType]string{
 		ttEOF:             "EOF",
+		ttNewLine:         "NewLine",
 		ttSymbol:          "Symbol",
 		ttNumber:          "Number",
 		ttString:          "String",

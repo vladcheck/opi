@@ -10,6 +10,7 @@ type Tokenizer struct {
 	input                              string
 	start, current, line, commentDepth int
 	inString                           bool
+	tokens                             []Token
 }
 
 // NewTokenizer creates a new Tokenizer.
@@ -21,31 +22,30 @@ func NewTokenizer(input string) Tokenizer {
 		line:         1,
 		commentDepth: 0,
 		inString:     false,
+		tokens:       make([]Token, 0, 2),
 	}
 }
 
 // Tokenize takes source code and turns it into a slice of tokens.
 func (t *Tokenizer) Tokenize() ([]Token, error) {
-	tokens := make([]Token, 0, 2)
-
 	for !t.isEOF() {
 		token, ok := t.match()
 
 		if ok {
-			tokens = append(tokens, token)
+			t.tokens = append(t.tokens, token)
 		}
 	}
 
-	tokens = append(tokens, newToken(ttEOF, t.line, "\x00"))
+	t.tokens = append(t.tokens, newToken(ttEOF, t.line, "\x00"))
 
-	return tokens, nil
+	return t.tokens, nil
 }
 
 //nolint:cyclop,funlen // This function must be a giant switch statement
 func (t *Tokenizer) match() (Token, bool) {
 	switch {
 	case t.isEOL():
-		t.advanceToNextLine()
+		t.advanceToNextLine(false)
 
 		return Token{}, false
 	case IsWhitespace(t.peek()):
@@ -215,7 +215,7 @@ func (t *Tokenizer) matchSlash() (Token, bool) {
 func (t *Tokenizer) skipMultilineComments() {
 	for t.commentDepth > 0 {
 		if t.isPeekMatches("\n") {
-			t.advanceToNextLine()
+			t.advanceToNextLine(true)
 
 			continue
 		}
@@ -249,7 +249,7 @@ func (t *Tokenizer) skipInlineComment() {
 		t.advance()
 	}
 
-	t.advanceToNextLine()
+	t.advanceToNextLine(true)
 }
 
 func (t *Tokenizer) matchPercent() Token {
@@ -362,7 +362,11 @@ func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
 	return false, true
 }
 
-func (t *Tokenizer) advanceToNextLine() {
+func (t *Tokenizer) advanceToNextLine(skipToken bool) {
+	if !skipToken {
+		t.tokens = append(t.tokens, newToken(ttNewLine, t.line, "\n"))
+	}
+
 	t.line++
 	t.advance()
 	t.consume()
