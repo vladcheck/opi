@@ -7,10 +7,12 @@ import (
 
 // Tokenizer is responsible for taking source code and turning it into a slice of tokens.
 type Tokenizer struct {
-	input                              string
-	start, current, line, commentDepth int
-	inString                           bool
-	tokens                             []Token
+	input          string
+	start, current int
+	line, col      int
+	commentDepth   int
+	inComment      bool
+	tokens         []Token
 }
 
 // NewTokenizer creates a new Tokenizer.
@@ -20,8 +22,9 @@ func NewTokenizer(input string) Tokenizer {
 		start:        0,
 		current:      0,
 		line:         1,
+		col:          1,
 		commentDepth: 0,
-		inString:     false,
+		inComment:    false,
 		tokens:       make([]Token, 0, 2),
 	}
 }
@@ -36,7 +39,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 		}
 	}
 
-	t.tokens = append(t.tokens, newToken(ttEOF, t.line))
+	t.tokens = append(t.tokens, newToken(ttEOF, t.line, t.col))
 
 	return t.tokens, nil
 }
@@ -45,10 +48,10 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 func (t *Tokenizer) match() (Token, bool) {
 	switch {
 	case t.isEOL():
-		t.advanceToNextLine(false)
+		t.advanceToNextLine()
 
 		return Token{}, false
-	case IsWhitespace(t.peek()):
+	case IsHorizontalWhitespace(t.peek()):
 		t.skipWhitespace()
 
 		return Token{}, false
@@ -202,8 +205,6 @@ func (t *Tokenizer) matchSlash() (Token, bool) {
 
 		return Token{}, false
 	} else if strings.EqualFold(next, "*") {
-		t.advanceTwice()
-		t.commentDepth = 1
 		t.skipMultilineComments()
 
 		return Token{}, false
@@ -213,9 +214,19 @@ func (t *Tokenizer) matchSlash() (Token, bool) {
 }
 
 func (t *Tokenizer) skipMultilineComments() {
+	t.inComment = true
+	t.advanceTwice()
+	t.commentDepth = 1
+
 	for t.commentDepth > 0 {
+		if IsHorizontalWhitespace(t.peek()) {
+			t.skipWhitespace()
+
+			continue
+		}
+
 		if t.isPeekMatches("\n") {
-			t.advanceToNextLine(true)
+			t.advanceToNextLine()
 
 			continue
 		}
@@ -242,14 +253,18 @@ func (t *Tokenizer) skipMultilineComments() {
 	}
 
 	t.advanceTwice()
+	t.advanceToNextLine()
+	t.inComment = false
 }
 
 func (t *Tokenizer) skipInlineComment() {
+	t.inComment = true
 	for !t.isEOL() {
 		t.advance()
 	}
 
-	t.advanceToNextLine(true)
+	t.advanceToNextLine()
+	t.inComment = false
 }
 
 func (t *Tokenizer) matchPercent() Token {
@@ -299,14 +314,14 @@ func (t *Tokenizer) matchWithEquals(char TokenType, charEquals TokenType) Token 
 
 // emit creates a token in range `[t.start:t.current]`, consumes and returns it.
 func (t *Tokenizer) emit(tt TokenType) Token {
-	token := newToken(tt, t.line)
+	token := newToken(tt, t.line, t.col)
 	t.consume()
 
 	return token
 }
 
 func (t *Tokenizer) emitWithValue(tt TokenType) Token {
-	token := newTokenWithValue(tt, t.line, t.input[t.start:t.current])
+	token := newTokenWithValue(tt, t.line, t.col, t.input[t.start:t.current])
 	t.consume()
 
 	return token
@@ -339,7 +354,7 @@ func (t *Tokenizer) see() string {
 }
 
 func (t *Tokenizer) skipWhitespace() {
-	for IsWhitespace(t.peek()) {
+	for IsHorizontalWhitespace(t.peek()) {
 		t.advance()
 	}
 
@@ -371,11 +386,12 @@ func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
 	return false, true
 }
 
-func (t *Tokenizer) advanceToNextLine(skipToken bool) {
-	if !skipToken {
-		t.tokens = append(t.tokens, newToken(ttNewLine, t.line))
+func (t *Tokenizer) advanceToNextLine() {
+	if !t.inComment {
+		t.tokens = append(t.tokens, newToken(ttNewLine, t.line, t.col))
 	}
 
+	t.resetColumn()
 	t.line++
 	t.advance()
 	t.consume()
@@ -387,9 +403,14 @@ func (t *Tokenizer) advanceTwice() {
 }
 
 func (t *Tokenizer) advance() {
+	t.col++
 	t.current++
 }
 
 func (t *Tokenizer) consume() {
 	t.start = t.current
+}
+
+func (t *Tokenizer) resetColumn() {
+	t.col = 0
 }

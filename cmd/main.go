@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	tok "vladcheck/opi/internal/tokenizer"
+	"vladcheck/opi/internal/tokenizer"
 )
 
 const extension = ".opi"
@@ -77,14 +77,14 @@ func run() error {
 }
 
 func executionLoop(content string) error {
-	tokenizer := tok.NewTokenizer(content)
+	t := tokenizer.NewTokenizer(content)
 
-	tokens, err := tokenizer.Tokenize()
+	tokens, err := t.Tokenize()
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
 
-	tok.DebugPrintAllTokens(tokens)
+	tokenizer.DebugPrintAllTokens(tokens)
 
 	return nil
 }

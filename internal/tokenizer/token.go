@@ -67,22 +67,24 @@ const (
 // Token represents a smallest unit of opi language.
 type Token struct {
 	TokenType TokenType
-	Line      int
+	Line, Col int
 	Value     *string
 }
 
-func newToken(tokenType TokenType, line int) Token {
+func newToken(tokenType TokenType, line int, col int) Token {
 	return Token{
 		TokenType: tokenType,
 		Line:      line,
+		Col:       col,
 		Value:     nil,
 	}
 }
 
-func newTokenWithValue(tokenType TokenType, line int, value string) Token {
+func newTokenWithValue(tokenType TokenType, line int, col int, value string) Token {
 	return Token{
 		TokenType: tokenType,
 		Line:      line,
+		Col:       col,
 		Value:     &value,
 	}
 }
@@ -90,14 +92,18 @@ func newTokenWithValue(tokenType TokenType, line int, value string) Token {
 // String represents a Token in plain string format.
 func (t Token) String() string {
 	if t.Value == nil {
-		return fmt.Sprintf("[line %d]: %s", t.Line, tokenTypeToString(t.TokenType))
+		return fmt.Sprintf("%s: %s", t.position(), tokenTypeToString(t.TokenType))
 	}
 
 	if strings.EqualFold(string((*t.Value)[0]), "\"") {
-		return fmt.Sprintf("[line %d]: %s (%s)", t.Line, tokenTypeToString(t.TokenType), *t.Value)
+		return fmt.Sprintf("%s: %s (%s)", t.position(), tokenTypeToString(t.TokenType), *t.Value)
 	}
 
-	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), *t.Value)
+	return fmt.Sprintf("%s: %s (%q)", t.position(), tokenTypeToString(t.TokenType), *t.Value)
+}
+
+func (t Token) position() string {
+	return fmt.Sprintf("[%d:%d]", t.Line, t.Col)
 }
 
 func tokenTypeBySubstring(substring string) (TokenType, bool) {

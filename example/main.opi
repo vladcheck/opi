@@ -38,3 +38,7 @@ if else or and
 switch fall
 func ret
 for do while break continue
+
+func sum(x int, y int) int {
+    return
+}
