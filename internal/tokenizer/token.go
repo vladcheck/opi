@@ -68,24 +68,36 @@ const (
 type Token struct {
 	TokenType TokenType
 	Line      int
-	Value     string
+	Value     *string
 }
 
-func newToken(tokenType TokenType, line int, value string) Token {
+func newToken(tokenType TokenType, line int) Token {
 	return Token{
 		TokenType: tokenType,
 		Line:      line,
-		Value:     value,
+		Value:     nil,
+	}
+}
+
+func newTokenWithValue(tokenType TokenType, line int, value string) Token {
+	return Token{
+		TokenType: tokenType,
+		Line:      line,
+		Value:     &value,
 	}
 }
 
 // String represents a Token in plain string format.
 func (t Token) String() string {
-	if strings.EqualFold(string(t.Value[0]), "\"") {
-		return fmt.Sprintf("[line %d]: %s (%s)", t.Line, tokenTypeToString(t.TokenType), t.Value)
+	if t.Value == nil {
+		return fmt.Sprintf("[line %d]: %s", t.Line, tokenTypeToString(t.TokenType))
 	}
 
-	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), t.Value)
+	if strings.EqualFold(string((*t.Value)[0]), "\"") {
+		return fmt.Sprintf("[line %d]: %s (%s)", t.Line, tokenTypeToString(t.TokenType), *t.Value)
+	}
+
+	return fmt.Sprintf("[line %d]: %s (%q)", t.Line, tokenTypeToString(t.TokenType), *t.Value)
 }
 
 func tokenTypeBySubstring(substring string) (TokenType, bool) {

@@ -36,7 +36,7 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 		}
 	}
 
-	t.tokens = append(t.tokens, newToken(ttEOF, t.line, "\x00"))
+	t.tokens = append(t.tokens, newToken(ttEOF, t.line))
 
 	return t.tokens, nil
 }
@@ -59,7 +59,7 @@ func (t *Tokenizer) match() (Token, bool) {
 			t.advance()
 		}
 
-		return t.emit(ttNumber), true
+		return t.emitWithValue(ttNumber), true
 	case t.isPeekMatches("\""):
 		return t.matchString(), true
 	case t.isPeekMatches("."):
@@ -136,7 +136,7 @@ func (t *Tokenizer) matchString() Token {
 
 	t.advance()
 
-	return t.emit(ttString)
+	return t.emitWithValue(ttString)
 }
 
 func (t *Tokenizer) matchExclamation() Token {
@@ -273,9 +273,11 @@ func (t *Tokenizer) matchSymbolOrKeyword() (Token, bool) {
 
 	tt, match := tokenTypeBySubstring(t.see())
 	if !match {
-		return t.emit(ttSymbol), true
+		// It is a symbol
+		return t.emitWithValue(ttSymbol), true
 	}
 
+	// It is a keyword
 	return t.emit(tt), true
 }
 
@@ -297,7 +299,14 @@ func (t *Tokenizer) matchWithEquals(char TokenType, charEquals TokenType) Token 
 
 // emit creates a token in range `[t.start:t.current]`, consumes and returns it.
 func (t *Tokenizer) emit(tt TokenType) Token {
-	token := newToken(tt, t.line, t.input[t.start:t.current])
+	token := newToken(tt, t.line)
+	t.consume()
+
+	return token
+}
+
+func (t *Tokenizer) emitWithValue(tt TokenType) Token {
+	token := newTokenWithValue(tt, t.line, t.input[t.start:t.current])
 	t.consume()
 
 	return token
@@ -364,7 +373,7 @@ func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
 
 func (t *Tokenizer) advanceToNextLine(skipToken bool) {
 	if !skipToken {
-		t.tokens = append(t.tokens, newToken(ttNewLine, t.line, "\n"))
+		t.tokens = append(t.tokens, newToken(ttNewLine, t.line))
 	}
 
 	t.line++
