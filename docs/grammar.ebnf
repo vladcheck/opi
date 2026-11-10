@@ -1,0 +1,107 @@
+(* ------------- *)
+(* NON-TERMINALS *)
+(* ------------- *)
+program
+  = block
+  | statement
+  | NEWLINE;
+
+block
+  = '{', { statement
+  | NEWLINE
+  | block }, '}';
+
+statement
+  = ( assignment
+  | expression ), NEWLINE;
+
+expression
+  = or;
+
+(* 9 *)
+assignment
+  = postfix, ( '='
+  | '+='
+  | '-='
+  | '%='
+  | '/='
+  | '*=' ), or;
+
+(* 8 *)
+or
+  = and, { 'or', and };
+
+(* 7 *)
+and
+  = equality, { 'and', equality };
+
+(* 6 *)
+equality
+  = relation, { ( '=='
+  | '!=' ), relation };
+
+(* 5 *)
+relation
+  = term, { ( '<'
+  | '<='
+  | '>'
+  | '>=' ), term };
+
+(* 4 *)
+term
+  = factor, { ( '+'
+  | '-' ), factor };
+
+(* 3 *)
+factor
+  = unary, { ( '*'
+  | '/'
+  | '%' ), unary };
+
+(* 2 *)
+unary
+  = { '-'
+  | '+'
+  | '!' }, postfix;
+
+(* 1 *)
+postfix
+  = primary;
+
+(* 0 *)
+primary
+  = literal
+  | symbol
+  | ( '(', expression, ')' );
+
+literal
+  = string
+  | NUMBER
+  | "true"
+  | "false"
+  | "null";
+
+string
+  = '"', { text
+  | escapeSequence }, '"';
+
+(* --------- *)
+(* TERMINALS *)
+(* --------- *)
+symbol
+  = (* an identifier *) ;
+
+text
+  = (* every character except '"' and '\' *) ;
+
+escapeSequence
+  = '\\', ( '"'
+  | '\\'
+  | 'n'
+  | 't' );
+
+NUMBER
+  = (* every unsigned integer or float *) ;
+
+NEWLINE
+  = '\n';
