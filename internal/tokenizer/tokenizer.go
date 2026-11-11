@@ -268,7 +268,6 @@ func (t *Tokenizer) skipInlineComment() {
 		t.advance()
 	}
 
-	t.advanceToNextLine()
 	t.inComment = false
 }
 
