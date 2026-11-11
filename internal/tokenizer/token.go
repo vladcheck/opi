@@ -9,8 +9,11 @@ import (
 type TokenType int
 
 const (
+	// TtSentinel signifies a token that gets returned in match() when no token was matched for some reason,
+	// but it's not a syntax error. Sentinel tokens must not get appended to the token slice.
+	TtSentinel TokenType = iota
 	// TtEOF \0.
-	TtEOF TokenType = iota
+	TtEOF
 	// TtNewLine is equal to \n.
 	TtNewLine
 	// TtSymbol represents an identifier.
@@ -129,6 +132,15 @@ func newToken(tokenType TokenType, line int, col int) Token {
 		TokenType: tokenType,
 		Line:      line,
 		Col:       col,
+		Value:     nil,
+	}
+}
+
+func newSentinelToken() Token {
+	return Token{
+		TokenType: TtSentinel,
+		Line:      0,
+		Col:       0,
 		Value:     nil,
 	}
 }

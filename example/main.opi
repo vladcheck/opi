@@ -4,8 +4,6 @@
     /* Nested multiline comment */
 */
 
-@
-
 // Operators
 , . :       // punctuation
 != !        // exclamation

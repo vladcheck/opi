@@ -19,8 +19,8 @@ type Tokenizer struct {
 }
 
 // NewTokenizer creates a new Tokenizer.
-func NewTokenizer(input string) Tokenizer {
-	return Tokenizer{
+func NewTokenizer(input string) *Tokenizer {
+	return new(Tokenizer{
 		input:        input,
 		start:        0,
 		current:      0,
@@ -29,7 +29,7 @@ func NewTokenizer(input string) Tokenizer {
 		commentDepth: 0,
 		inComment:    false,
 		tokens:       make([]Token, 0, 2),
-	}
+	})
 }
 
 // Tokenize takes source code and turns it into a slice of tokens.
@@ -40,7 +40,9 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 			return t.tokens, err
 		}
 
-		t.tokens = append(t.tokens, token)
+		if token.TokenType != TtSentinel {
+			t.tokens = append(t.tokens, token)
+		}
 	}
 
 	t.tokens = append(t.tokens, newToken(TtEOF, t.line, t.col))
@@ -54,11 +56,11 @@ func (t *Tokenizer) match() (Token, error) {
 	case t.isEOL():
 		t.advanceToNextLine()
 
-		return Token{}, nil
+		return newSentinelToken(), nil
 	case IsHorizontalWhitespace(t.peek()):
 		t.skipWhitespace()
 
-		return Token{}, nil
+		return newSentinelToken(), nil
 	case IsNumeric(t.peek()):
 		t.advance()
 
@@ -207,11 +209,11 @@ func (t *Tokenizer) matchSlash() Token {
 	if strings.EqualFold(next, "/") {
 		t.skipInlineComment()
 
-		return Token{}
+		return newSentinelToken()
 	} else if strings.EqualFold(next, "*") {
 		t.skipMultilineComments()
 
-		return Token{}
+		return newSentinelToken()
 	}
 
 	return t.matchWithEquals(TtSlash, TtSlashEquals)
@@ -257,7 +259,6 @@ func (t *Tokenizer) skipMultilineComments() {
 	}
 
 	t.advanceTwice()
-	t.advanceToNextLine()
 	t.inComment = false
 }
 
@@ -397,8 +398,8 @@ func (t *Tokenizer) advanceToNextLine() {
 
 	t.resetColumn()
 	t.line++
-	t.advance()
 	t.consume()
+	t.advance()
 }
 
 func (t *Tokenizer) advanceTwice() {

@@ -85,7 +85,7 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	// tokenizer.DebugPrintAllTokens(tokens)
+	tokenizer.DebugPrintAllTokens(tokens)
 
 	p := parser.NewParser(tokens)
 
