@@ -13,6 +13,9 @@ linters:
       - linters:
           - revive
         text: "package-comments: should have a package comment"
+      - linters:
+          - gochecknoglobals
+        path: ".*/debug\\.go$"
   settings:
     varnamelen:
       max-distance: 10
