@@ -156,15 +156,20 @@ func newTokenWithValue(tokenType TokenType, line int, col int, value string) Tok
 
 // String represents a Token in plain string format.
 func (t Token) String() string {
+	return tokenTypeToString(t.TokenType)
+}
+
+// StringVerbose represents a Token in plain string format.
+func (t Token) StringVerbose() string {
 	if t.Value == nil {
-		return fmt.Sprintf("%s: %s", t.position(), tokenTypeToString(t.TokenType))
+		return fmt.Sprintf("%s at %s", tokenTypeToString(t.TokenType), t.position())
 	}
 
 	if strings.EqualFold(string((*t.Value)[0]), "\"") {
-		return fmt.Sprintf("%s: %s (%s)", t.position(), tokenTypeToString(t.TokenType), *t.Value)
+		return fmt.Sprintf("%s (%s) at %s", tokenTypeToString(t.TokenType), *t.Value, t.position())
 	}
 
-	return fmt.Sprintf("%s: %s (%q)", t.position(), tokenTypeToString(t.TokenType), *t.Value)
+	return fmt.Sprintf("%s (%q) at %s", tokenTypeToString(t.TokenType), *t.Value, t.position())
 }
 
 func (t Token) position() string {

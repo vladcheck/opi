@@ -1,14 +1,33 @@
+//nolint:gochecknoglobals
 package tokenizer
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"time"
 )
 
+var debugLogger = log.New(os.Stdout, "", 0)
+
 // DebugPrintAllTokens logs all tokens of []Token, each token on a new line and prettified.
 func DebugPrintAllTokens(tokens []Token) {
-	for _, t := range tokens {
-		log.Printf("%s\n", t.String())
+	strs := make([]string, 0)
+
+	for _, token := range tokens {
+		if token.TokenType == TtNewLine {
+			strs = append(strs, token.String())
+			debugLogger.Println(strs)
+			strs = make([]string, 0)
+
+			continue
+		}
+
+		if token.Value == nil {
+			strs = append(strs, token.String())
+		} else {
+			strs = append(strs, fmt.Sprintf("%s(%q)", token.String(), *token.Value))
+		}
 	}
 }
 
@@ -18,7 +37,7 @@ func (t *Tokenizer) DebugPrintTokenizer() {
 
 	next, _ := t.peekNext()
 
-	log.Printf("i: %d j: %d peek: %q next: %q\n", t.start, t.current, t.peek(), next)
+	debugLogger.Printf("i: %d j: %d peek: %q next: %q\n", t.start, t.current, t.peek(), next)
 
 	time.Sleep(sleepTime)
 }
