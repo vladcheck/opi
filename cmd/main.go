@@ -17,7 +17,7 @@ import (
 const extension = ".opi"
 
 var (
-	errLogger = log.New(os.Stderr, "ERROR: ", 0)
+	errLogger = log.New(os.Stderr, "", 0)
 
 	ErrPathRequired   = errors.New("filepath is not specified")
 	ErrDoesNotExist   = errors.New("path does not exist")
