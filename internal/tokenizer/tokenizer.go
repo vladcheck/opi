@@ -6,7 +6,10 @@ import (
 	"strings"
 )
 
-var errUnknownCharacter = errors.New("syntax error: unknown character")
+var (
+	errUnknownCharacter   = errors.New("syntax error: unknown character")
+	errUnterminatedString = errors.New("syntax error: unterminated string")
+)
 
 // Tokenizer is responsible for taking source code and turning it into a slice of tokens.
 type Tokenizer struct {
@@ -70,7 +73,7 @@ func (t *Tokenizer) match() (Token, error) {
 
 		return t.emitWithValue(TtNumber), nil
 	case t.isPeekMatches("\""):
-		return t.matchString(), nil
+		return t.matchString()
 	case t.isPeekMatches("."):
 		return t.emitSingle(TtDot), nil
 	case t.isPeekMatches(","):
@@ -116,7 +119,7 @@ func (t *Tokenizer) match() (Token, error) {
 	}
 }
 
-func (t *Tokenizer) matchString() Token {
+func (t *Tokenizer) matchString() (Token, error) {
 	t.advance()
 
 	possibleEscape := false
@@ -143,9 +146,13 @@ func (t *Tokenizer) matchString() Token {
 		}
 	}
 
+	if t.isEOF() || t.isEOL() {
+		return newSentinelToken(), fmt.Errorf("%w at %s", errUnterminatedString, t.position())
+	}
+
 	t.advance()
 
-	return t.emitWithValue(TtString)
+	return t.emitWithValue(TtString), nil
 }
 
 func (t *Tokenizer) matchExclamation() Token {
