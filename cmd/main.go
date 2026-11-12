@@ -89,12 +89,12 @@ func executionLoop(content string) error {
 
 	p := parser.NewParser(tokens)
 
-	ast, err := p.Parse()
+	root, err := p.Parse()
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
 
-	parser.DebugPrintAST(ast)
+	parser.DebugPrintAST(root)
 
 	return nil
 }

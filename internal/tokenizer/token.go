@@ -162,17 +162,19 @@ func (t Token) String() string {
 // StringVerbose represents a Token in plain string format.
 func (t Token) StringVerbose() string {
 	if t.Value == nil {
-		return fmt.Sprintf("%s at %s", tokenTypeToString(t.TokenType), t.position())
+		return fmt.Sprintf("%s at %s", tokenTypeToString(t.TokenType), t.Position())
 	}
 
 	if strings.EqualFold(string((*t.Value)[0]), "\"") {
-		return fmt.Sprintf("%s (%s) at %s", tokenTypeToString(t.TokenType), *t.Value, t.position())
+		return fmt.Sprintf("%s (%s) at %s", tokenTypeToString(t.TokenType), *t.Value, t.Position())
 	}
 
-	return fmt.Sprintf("%s (%q) at %s", tokenTypeToString(t.TokenType), *t.Value, t.position())
+	return fmt.Sprintf("%s (%q) at %s", tokenTypeToString(t.TokenType), *t.Value, t.Position())
 }
 
-func (t Token) position() string {
+// Position returns token's position in source code in format [line:col].
+// Position is determined during tokenization.
+func (t Token) Position() string {
 	return fmt.Sprintf("[%d:%d]", t.Line, t.Col)
 }
 
