@@ -32,6 +32,10 @@ const (
 	NtLessThanOrEqual
 	// NtMoreThanOrEqual is a 'more than or equal' binary operator.
 	NtMoreThanOrEqual
+	// NtAdd is a binary addition/concatenation operator.
+	NtAdd
+	// NtSub is a binary subtraction operator.
+	NtSub
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -87,6 +91,8 @@ func nodeTypeToString(nodeType NodeType) string {
 		NtLessThanOrEqual: "LessOrEq",
 		NtMoreThan:        "More",
 		NtMoreThanOrEqual: "MoreOrEq",
+		NtAdd:             "Add",
+		NtSub:             "Sub",
 	}
 
 	s, ok := nodeTypeMap[nodeType]

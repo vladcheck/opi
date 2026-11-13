@@ -148,7 +148,7 @@ func (p *Parser) parseEquality() (*Node, error) {
 
 // level 5.
 func (p *Parser) parseRelation() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseTerm()
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +157,7 @@ func (p *Parser) parseRelation() (*Node, error) {
 	if tz.IsRelationTokenType(tokenType) {
 		p.advance()
 
-		right, err := p.parseLiteral()
+		right, err := p.parseTerm()
 		if err != nil {
 			return nil, err
 		}
@@ -173,6 +173,39 @@ func (p *Parser) parseRelation() (*Node, error) {
 			node = NewNode(NtLessThanOrEqual)
 		case tz.TtMoreThanOrEqual:
 			node = NewNode(NtMoreThanOrEqual)
+		}
+
+		node.Left = left
+		node.Right = right
+		left = node
+	}
+
+	return left, nil
+}
+
+// level 4.
+func (p *Parser) parseTerm() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.peekType() == tz.TtPlus || p.peekType() == tz.TtMinus {
+		tt := p.peekType()
+		p.advance()
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		var node *Node
+
+		switch tt {
+		case tz.TtPlus:
+			node = NewNode(NtAdd)
+		case tz.TtMinus:
+			node = NewNode(NtSub)
 		}
 
 		node.Left = left
