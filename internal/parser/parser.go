@@ -63,7 +63,7 @@ func (p *Parser) parseExpression() (*Node, error) {
 }
 
 func (p *Parser) parseOr() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseAnd()
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +71,35 @@ func (p *Parser) parseOr() (*Node, error) {
 	for p.peekType() == tz.TtOr {
 		p.advance() // consume TtOr
 
-		right, err := p.parseLiteral()
+		right, err := p.parseAnd()
 		if err != nil {
 			return nil, err
 		}
 
 		n := NewNode(NtOr)
+		n.Left = left
+		n.Right = right
+		left = n
+	}
+
+	return left, nil
+}
+
+func (p *Parser) parseAnd() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.peekType() == tz.TtAnd {
+		p.advance()
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		n := NewNode(NtAnd)
 		n.Left = left
 		n.Right = right
 		left = n

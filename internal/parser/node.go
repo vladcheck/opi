@@ -18,6 +18,8 @@ const (
 	NtBool
 	// NtOr is an Or binary operator.
 	NtOr
+	// NtAnd is an And binary operator.
+	NtAnd
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -58,7 +60,7 @@ func (n *Node) String() string {
 	return nt
 }
 
-func nodeTypeToString(nt NodeType) string {
+func nodeTypeToString(nodeType NodeType) string {
 	m := map[NodeType]string{
 		NtProgram:    "Program",
 		NtExpression: "Expr",
@@ -66,9 +68,10 @@ func nodeTypeToString(nt NodeType) string {
 		NtString:     "String",
 		NtBool:       "Bool",
 		NtOr:         "Or",
+		NtAnd:        "And",
 	}
 
-	s, ok := m[nt]
+	s, ok := m[nodeType]
 	if !ok {
 		return "UNMATCHED (edit nodeTypeToString())"
 	}
