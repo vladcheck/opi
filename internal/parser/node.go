@@ -20,6 +20,10 @@ const (
 	NtOr
 	// NtAnd is an And binary operator.
 	NtAnd
+	// NtEquals is an Equality binary operator.
+	NtEquals
+	// NtNotEquals is an Equality binary operator.
+	NtNotEquals
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -61,17 +65,19 @@ func (n *Node) String() string {
 }
 
 func nodeTypeToString(nodeType NodeType) string {
-	m := map[NodeType]string{
+	nodeTypeMap := map[NodeType]string{
 		NtProgram:    "Program",
 		NtExpression: "Expr",
-		NtNumber:     "Number",
-		NtString:     "String",
+		NtNumber:     "Num",
+		NtString:     "Str",
 		NtBool:       "Bool",
 		NtOr:         "Or",
 		NtAnd:        "And",
+		NtEquals:     "Eq",
+		NtNotEquals:  "Neq",
 	}
 
-	s, ok := m[nodeType]
+	s, ok := nodeTypeMap[nodeType]
 	if !ok {
 		return "UNMATCHED (edit nodeTypeToString())"
 	}

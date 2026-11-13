@@ -62,6 +62,7 @@ func (p *Parser) parseExpression() (*Node, error) {
 	return node, nil
 }
 
+// level 8.
 func (p *Parser) parseOr() (*Node, error) {
 	left, err := p.parseAnd()
 	if err != nil {
@@ -85,8 +86,9 @@ func (p *Parser) parseOr() (*Node, error) {
 	return left, nil
 }
 
+// level 7.
 func (p *Parser) parseAnd() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseEquality()
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +96,7 @@ func (p *Parser) parseAnd() (*Node, error) {
 	for p.peekType() == tz.TtAnd {
 		p.advance()
 
-		right, err := p.parseLiteral()
+		right, err := p.parseEquality()
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +110,39 @@ func (p *Parser) parseAnd() (*Node, error) {
 	return left, nil
 }
 
-//nolint:exhaustive
+// level 6.
+func (p *Parser) parseEquality() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.peekType() == tz.TtEqualsEquals || p.peekType() == tz.TtNotEquals {
+		tt := p.peekType()
+		p.advance()
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		var node *Node
+
+		switch tt {
+		case tz.TtEqualsEquals:
+			node = NewNode(NtEquals)
+		case tz.TtNotEquals:
+			node = NewNode(NtNotEquals)
+		}
+
+		node.Left = left
+		node.Right = right
+		left = node
+	}
+
+	return left, nil
+}
+
 func (p *Parser) parseLiteral() (*Node, error) {
 	switch p.peekType() {
 	case tz.TtNumber:

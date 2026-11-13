@@ -17,6 +17,8 @@ linters:
           - gochecknoglobals
         path: ".*/debug\\.go$"
   settings:
+    exhaustive:
+      explicit-exhaustive: true
     varnamelen:
       max-distance: 10
       ignore-type-assert-ok: true
