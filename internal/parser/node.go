@@ -16,6 +16,8 @@ const (
 	NtString
 	// NtBool is a bool literal (true or false).
 	NtBool
+	// NtOr is an Or binary operator.
+	NtOr
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -63,6 +65,7 @@ func nodeTypeToString(nt NodeType) string {
 		NtNumber:     "Number",
 		NtString:     "String",
 		NtBool:       "Bool",
+		NtOr:         "Or",
 	}
 
 	s, ok := m[nt]

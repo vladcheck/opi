@@ -50,9 +50,9 @@ func (p *Parser) parseExpression() (*Node, error) {
 	current := node
 
 	for p.peekType() != tz.TtNewLine {
-		newNode, err := p.parseLiteral()
+		newNode, err := p.parseOr()
 		if err != nil {
-			return &Node{}, err
+			return nil, err
 		}
 
 		current.Left = newNode
@@ -60,6 +60,29 @@ func (p *Parser) parseExpression() (*Node, error) {
 	}
 
 	return node, nil
+}
+
+func (p *Parser) parseOr() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.peekType() == tz.TtOr {
+		p.advance() // consume TtOr
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		n := NewNode(NtOr)
+		n.Left = left
+		n.Right = right
+		left = n
+	}
+
+	return left, nil
 }
 
 //nolint:exhaustive
@@ -72,7 +95,7 @@ func (p *Parser) parseLiteral() (*Node, error) {
 	case tz.TtFalse, tz.TtTrue:
 		return p.parseBool()
 	default:
-		return &Node{}, p.announceError(errNotALiteral)
+		return nil, p.announceError(errNotALiteral)
 	}
 }
 
@@ -102,7 +125,7 @@ func (p *Parser) parseTerminalWithValue(condition bool, nt NodeType, err error) 
 		return NewNodeWithValue(nt, v), nil
 	}
 
-	return &Node{}, err
+	return nil, err
 }
 
 func (p *Parser) peek() tz.Token {
