@@ -185,7 +185,7 @@ func (p *Parser) parseRelation() (*Node, error) {
 
 // level 4.
 func (p *Parser) parseTerm() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseFactor()
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (p *Parser) parseTerm() (*Node, error) {
 		tt := p.peekType()
 		p.advance()
 
-		right, err := p.parseLiteral()
+		right, err := p.parseFactor()
 		if err != nil {
 			return nil, err
 		}
@@ -206,6 +206,41 @@ func (p *Parser) parseTerm() (*Node, error) {
 			node = NewNode(NtAdd)
 		case tz.TtMinus:
 			node = NewNode(NtSub)
+		}
+
+		node.Left = left
+		node.Right = right
+		left = node
+	}
+
+	return left, nil
+}
+
+// level 3.
+func (p *Parser) parseFactor() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.peekType() == tz.TtStar || p.peekType() == tz.TtSlash || p.peekType() == tz.TtPercent {
+		tt := p.peekType()
+		p.advance()
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		var node *Node
+
+		switch tt {
+		case tz.TtStar:
+			node = NewNode(NtMul)
+		case tz.TtSlash:
+			node = NewNode(NtDiv)
+		case tz.TtPercent:
+			node = NewNode(NtMod)
 		}
 
 		node.Left = left

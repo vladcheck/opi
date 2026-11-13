@@ -36,6 +36,12 @@ const (
 	NtAdd
 	// NtSub is a binary subtraction operator.
 	NtSub
+	// NtMul is a binary multiplication operator.
+	NtMul
+	// NtDiv is a binary division operator.
+	NtDiv
+	// NtMod is a binary modulus operator.
+	NtMod
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -93,6 +99,9 @@ func nodeTypeToString(nodeType NodeType) string {
 		NtMoreThanOrEqual: "MoreOrEq",
 		NtAdd:             "Add",
 		NtSub:             "Sub",
+		NtMul:             "Mul",
+		NtDiv:             "Div",
+		NtMod:             "Mod",
 	}
 
 	s, ok := nodeTypeMap[nodeType]
