@@ -22,8 +22,16 @@ const (
 	NtAnd
 	// NtEquals is an Equality binary operator.
 	NtEquals
-	// NtNotEquals is an Equality binary operator.
+	// NtNotEquals is an Inequality binary operator.
 	NtNotEquals
+	// NtLessThan is a 'less than' binary operator.
+	NtLessThan
+	// NtMoreThan is a 'more than' binary operator.
+	NtMoreThan
+	// NtLessThanOrEqual is a 'less than or equal' binary operator.
+	NtLessThanOrEqual
+	// NtMoreThanOrEqual is a 'more than or equal' binary operator.
+	NtMoreThanOrEqual
 )
 
 // Node is a single element in the AST, holding zero or more child Nodes.
@@ -66,15 +74,19 @@ func (n *Node) String() string {
 
 func nodeTypeToString(nodeType NodeType) string {
 	nodeTypeMap := map[NodeType]string{
-		NtProgram:    "Program",
-		NtExpression: "Expr",
-		NtNumber:     "Num",
-		NtString:     "Str",
-		NtBool:       "Bool",
-		NtOr:         "Or",
-		NtAnd:        "And",
-		NtEquals:     "Eq",
-		NtNotEquals:  "Neq",
+		NtProgram:         "Program",
+		NtExpression:      "Expr",
+		NtNumber:          "Num",
+		NtString:          "Str",
+		NtBool:            "Bool",
+		NtOr:              "Or",
+		NtAnd:             "And",
+		NtEquals:          "Eq",
+		NtNotEquals:       "Neq",
+		NtLessThan:        "Less",
+		NtLessThanOrEqual: "LessOrEq",
+		NtMoreThan:        "More",
+		NtMoreThanOrEqual: "MoreOrEq",
 	}
 
 	s, ok := nodeTypeMap[nodeType]

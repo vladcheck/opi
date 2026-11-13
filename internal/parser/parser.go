@@ -26,7 +26,7 @@ func NewParser(tokens []tz.Token) Parser {
 	return Parser{
 		tokens: tokens,
 		Tree: AST{
-			Root: NewNode(NtProgram),
+			Root: nil,
 		},
 		current: 0,
 	}
@@ -34,12 +34,15 @@ func NewParser(tokens []tz.Token) Parser {
 
 // Parse consumes the parser's tokens and returns the resulting AST.
 func (p *Parser) Parse() (*Node, error) {
+	root := NewNode(NtProgram)
+
 	node, err := p.parseExpression()
 	if err != nil {
 		return p.Tree.Root, err
 	}
 
-	p.Tree.Root.Left = node
+	root.Left = node
+	p.Tree.Root = root
 
 	return p.Tree.Root, nil
 }
@@ -112,7 +115,7 @@ func (p *Parser) parseAnd() (*Node, error) {
 
 // level 6.
 func (p *Parser) parseEquality() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseRelation()
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +124,7 @@ func (p *Parser) parseEquality() (*Node, error) {
 		tt := p.peekType()
 		p.advance()
 
-		right, err := p.parseLiteral()
+		right, err := p.parseRelation()
 		if err != nil {
 			return nil, err
 		}
@@ -133,6 +136,43 @@ func (p *Parser) parseEquality() (*Node, error) {
 			node = NewNode(NtEquals)
 		case tz.TtNotEquals:
 			node = NewNode(NtNotEquals)
+		}
+
+		node.Left = left
+		node.Right = right
+		left = node
+	}
+
+	return left, nil
+}
+
+// level 5.
+func (p *Parser) parseRelation() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
+	}
+
+	tokenType := p.peekType()
+	if tz.IsRelationTokenType(tokenType) {
+		p.advance()
+
+		right, err := p.parseLiteral()
+		if err != nil {
+			return nil, err
+		}
+
+		var node *Node
+
+		switch tokenType {
+		case tz.TtLArrow:
+			node = NewNode(NtLessThan)
+		case tz.TtNotEquals:
+			node = NewNode(NtMoreThan)
+		case tz.TtLessThanOrEqual:
+			node = NewNode(NtLessThanOrEqual)
+		case tz.TtMoreThanOrEqual:
+			node = NewNode(NtMoreThanOrEqual)
 		}
 
 		node.Left = left

@@ -268,3 +268,12 @@ func tokenTypeToString(tokenType TokenType) string {
 
 	return value
 }
+
+// IsRelationTokenType checks if provided TokenType belongs to the set of relational tokens:
+//   - less than (<)
+//   - more than (>)
+//   - less than or equal (<=)
+//   - more than or equal (>=)
+func IsRelationTokenType(tt TokenType) bool {
+	return tt == TtLArrow || tt == TtRArrow || tt == TtLessThanOrEqual || tt == TtMoreThanOrEqual
+}
