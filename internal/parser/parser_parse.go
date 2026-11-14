@@ -1,21 +1,35 @@
 package parser
 
-import tz "vladcheck/opi/internal/tokenizer"
+import (
+	tz "vladcheck/opi/internal/tokenizer"
+)
+
+// parseExpressionAsGroup is a decorator over parseExpression
+// that replaces NodeType NtExpr with NtGroup before returning.
+//
+// Helpful for debugging.
+func (p *Parser) parseExpressionAsGroup() (*Node, error) {
+	node, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	// Signifying that this expression is a group
+	node.NodeType = NtGroup
+
+	return node, nil
+}
 
 func (p *Parser) parseExpression() (*Node, error) {
 	node := NewNode(NtExpression)
 
-	current := node
-
-	for p.peekType() != tz.TtNewLine {
-		newNode, err := p.parseOr()
-		if err != nil {
-			return nil, err
-		}
-
-		current.Left = newNode
-		current = current.Left
+	newNode, err := p.parseOr()
+	if err != nil {
+		return nil, err
 	}
+
+	node.Left = newNode
+	node = node.Left
 
 	return node, nil
 }
@@ -228,12 +242,55 @@ func (p *Parser) parsePostfix() (*Node, error) {
 
 // level 0.
 func (p *Parser) parsePrimary() (*Node, error) {
-	left, err := p.parseLiteral()
+	var (
+		left *Node
+		err  error
+	)
+
+	if left, err = p.parseLiteral(); err == nil {
+		return left, nil
+	}
+
+	if left, err = p.parseSymbol(); err == nil {
+		return left, nil
+	}
+
+	if left, err = p.parseGroup(); err == nil {
+		return left, nil
+	}
+
+	return nil, p.announceError(errExpectedSymbolLiteralOrExpr)
+}
+
+func (p *Parser) parseGroup() (*Node, error) {
+	if p.peekType() != tz.TtLParen {
+		return nil, p.announceError(errExpectedLParen)
+	}
+
+	p.advance()
+
+	left, err := p.parseExpressionAsGroup()
 	if err != nil {
 		return nil, err
 	}
 
+	if p.peekType() != tz.TtRParen {
+		return nil, p.announceError(errExpectedRParen)
+	}
+
+	p.advance()
+
 	return left, nil
+}
+
+func (p *Parser) parseSymbol() (*Node, error) {
+	if p.peekType() != tz.TtSymbol {
+		return nil, p.announceError(errNotASymbol)
+	}
+
+	n := NewNodeWithValue(NodeType(p.peekType()), p.peek().Value)
+
+	return n, nil
 }
 
 func (p *Parser) parseLiteral() (*Node, error) {

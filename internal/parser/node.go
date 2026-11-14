@@ -10,6 +10,8 @@ const (
 	NtProgram NodeType = iota
 	// NtExpression represents an expression - an rvalue that evaluates to a value (e.g. a literal or a function).
 	NtExpression
+	// NtGroup is an expression that is covered in parentheses.
+	NtGroup
 	// NtNumber is a number literal.
 	NtNumber
 	// NtString is a string literal.
@@ -102,6 +104,7 @@ func nodeTypeToString(nodeType NodeType) string {
 		NtMul:             "Mul",
 		NtDiv:             "Div",
 		NtMod:             "Mod",
+		NtGroup:           "Group",
 	}
 
 	s, ok := nodeTypeMap[nodeType]

@@ -72,7 +72,10 @@ postfix
 primary
   = literal
   | symbol
-  | ( '(', expression, ')' );
+  | group;
+
+group
+  = '(', expression, ')';
 
 literal
   = string

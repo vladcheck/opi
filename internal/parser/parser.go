@@ -7,10 +7,14 @@ import (
 )
 
 var (
-	errNotANumber  = errors.New("not a number")
-	errNotAString  = errors.New("not a string")
-	errNotABool    = errors.New("not a bool")
-	errNotALiteral = errors.New("not a literal")
+	errNotANumber                  = errors.New("expected number")
+	errNotAString                  = errors.New("expected string")
+	errNotABool                    = errors.New("expected bool")
+	errNotALiteral                 = errors.New("expected literal")
+	errNotASymbol                  = errors.New("expected symbol")
+	errExpectedLParen              = errors.New("expected '('")
+	errExpectedRParen              = errors.New("expected ')'")
+	errExpectedSymbolLiteralOrExpr = errors.New("expected symbol, literal or expression")
 )
 
 // Parser consumes a slice of tokens and produces an AST.
@@ -61,6 +65,7 @@ func (p *Parser) advance() {
 
 func (p *Parser) announceError(err error) error {
 	token := p.peek()
+	raw := tz.Raw(p.peekType())
 
-	return fmt.Errorf("parse error: %w, got %s at %s", err, token, token.Position())
+	return fmt.Errorf("parse error: %w, got %q at %s", err, raw, token.Position())
 }

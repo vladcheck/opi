@@ -293,6 +293,28 @@ func tokenTypeToString(tokenType TokenType) string {
 	return value
 }
 
+// Raw returns raw string representation of the TokenType. Only terminals have one.
+// It works in two ways:
+//   - if TokenType has a defined raw representation, it gets returned;
+//   - otherwise using tokenTypeToString to get the string;
+func Raw(tokenType TokenType) string {
+	ttAsCharMap := map[TokenType]string{
+		TtLBrace:   "{",
+		TtRBrace:   "}",
+		TtLBracket: "[",
+		TtRBracket: "]",
+		TtLParen:   "(",
+		TtRParen:   ")",
+	}
+	v, ok := ttAsCharMap[tokenType]
+
+	if !ok {
+		return tokenTypeToString(tokenType)
+	}
+
+	return v
+}
+
 // IsRelationTokenType checks if provided TokenType belongs to the set of relational tokens:
 //   - less than (<)
 //   - more than (>)
