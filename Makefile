@@ -1,2 +1,5 @@
 build:
-	@go build -o bin/opi ./cmd/main.go
+	@go build -o bin/opi ./cmd
+
+run: build
+	@./bin/opi

@@ -14,5 +14,21 @@
     "go.lintFlags": [
         "--path-mode=abs",
         "--fast-only"
-    ]
+    ],
+    "makefile.configurations": [
+        {
+            "name": "Default",
+            "makefilePath": "${workspaceFolder}/Makefile",
+            "makePath": "/usr/bin/make",
+            "makeArgs": []
+        }
+    ],
+    "makefile.launchConfigurations": [
+        {
+            "name": "Run opi",
+            "binaryPath": "${workspaceFolder}/bin/opi",
+            "cwd": "${workspaceFolder}"
+        }
+    ],
+    "makefile.buildLog": "${workspaceFolder}/build.log",
 }
