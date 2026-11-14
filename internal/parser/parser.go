@@ -218,7 +218,7 @@ func (p *Parser) parseTerm() (*Node, error) {
 
 // level 3.
 func (p *Parser) parseFactor() (*Node, error) {
-	left, err := p.parseLiteral()
+	left, err := p.parseUnary()
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +227,7 @@ func (p *Parser) parseFactor() (*Node, error) {
 		tt := p.peekType()
 		p.advance()
 
-		right, err := p.parseLiteral()
+		right, err := p.parseUnary()
 		if err != nil {
 			return nil, err
 		}
@@ -246,6 +246,36 @@ func (p *Parser) parseFactor() (*Node, error) {
 		node.Left = left
 		node.Right = right
 		left = node
+	}
+
+	return left, nil
+}
+
+// level 2.
+func (p *Parser) parseUnary() (*Node, error) {
+	left, err := p.parsePostfix()
+	if err != nil {
+		return nil, err
+	}
+
+	return left, nil
+}
+
+// level 1.
+func (p *Parser) parsePostfix() (*Node, error) {
+	left, err := p.parsePrimary()
+	if err != nil {
+		return nil, err
+	}
+
+	return left, nil
+}
+
+// level 0.
+func (p *Parser) parsePrimary() (*Node, error) {
+	left, err := p.parseLiteral()
+	if err != nil {
+		return nil, err
 	}
 
 	return left, nil
