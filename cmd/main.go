@@ -10,8 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"vladcheck/opi/internal/parser"
-	"vladcheck/opi/internal/tokenizer"
 )
 
 const extension = ".opi"
@@ -39,8 +37,8 @@ func run() error {
 	}
 
 	var execPtr string
-	flag.StringVar(&execPtr, "exec", "", "--exec <code>")
-	flag.StringVar(&execPtr, "e", "", "-e <code>")
+	flag.StringVar(&execPtr, "exec", "", "code to execute")
+	flag.StringVar(&execPtr, "e", "", "shorthand for -exec")
 
 	flag.Parse()
 
@@ -75,35 +73,6 @@ func run() error {
 	}
 
 	return nil
-}
-
-func executionLoop(content string) error {
-	t := tokenizer.NewTokenizer(content)
-
-	tokens, err := t.Tokenize()
-	if err != nil {
-		return fmt.Errorf("%w", err)
-	}
-
-	tokenizer.DebugPrintAllTokens(tokens)
-
-	p := parser.NewParser(tokens)
-
-	root, err := p.Parse()
-	if err != nil {
-		return fmt.Errorf("%w", err)
-	}
-
-	parser.DebugPrintAST(root)
-
-	return nil
-}
-
-func usage() {
-	_, err := fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s path/to/a/file\n", filepath.Base(os.Args[0]))
-	if err != nil {
-		errLogger.Fatal(err)
-	}
 }
 
 func validatePath(path string) error {
