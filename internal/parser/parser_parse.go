@@ -242,20 +242,20 @@ func (p *Parser) parsePostfix() (*Node, error) {
 
 // level 0.
 func (p *Parser) parsePrimary() (*Node, error) {
-	var (
-		left *Node
-		err  error
-	)
+	var left *Node
 
-	if left, err = p.parseLiteral(); err == nil {
+	left, _ = p.parseLiteral()
+	if left != nil {
 		return left, nil
 	}
 
-	if left, err = p.parseSymbol(); err == nil {
+	left, _ = p.parseSymbol()
+	if left != nil {
 		return left, nil
 	}
 
-	if left, err = p.parseGroup(); err == nil {
+	left, _ = p.parseGroup()
+	if left != nil {
 		return left, nil
 	}
 
