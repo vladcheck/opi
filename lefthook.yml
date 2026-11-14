@@ -8,6 +8,7 @@ pre-commit:
     lint:
       run: lintme run
       glob: "*.go"
+      stage_fixed: true
     test:
       run: go test ./...
       glob: "*.go"
