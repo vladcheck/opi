@@ -6,7 +6,7 @@ import (
 	"vladcheck/opi/internal/tokenizer"
 )
 
-func executionLoop(content string) error {
+func executionLoop(content string, debug bool) error {
 	t := tokenizer.NewTokenizer(content)
 
 	tokens, err := t.Tokenize()
@@ -14,7 +14,9 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	tokenizer.DebugPrintAllTokens(tokens)
+	if debug {
+		tokenizer.DebugPrintAllTokens(tokens)
+	}
 
 	p := parser.NewParser(tokens)
 
@@ -23,7 +25,9 @@ func executionLoop(content string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	parser.DebugPrintAST(root)
+	if debug {
+		parser.DebugPrintAST(root)
+	}
 
 	return nil
 }

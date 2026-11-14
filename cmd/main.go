@@ -36,6 +36,10 @@ func run() error {
 		flag.PrintDefaults()
 	}
 
+	var debugPtr bool
+	flag.BoolVar(&debugPtr, "debug", false,
+		"print debug strings during internal "+"actions (tokenizing, parsing, semantic analysis")
+
 	var execPtr string
 	flag.StringVar(&execPtr, "exec", "", "code to execute")
 	flag.StringVar(&execPtr, "e", "", "shorthand for -exec")
@@ -43,7 +47,7 @@ func run() error {
 	flag.Parse()
 
 	if len(execPtr) > 0 {
-		err := executionLoop(execPtr)
+		err := executionLoop(execPtr, debugPtr)
 		if err != nil {
 			return err
 		}
@@ -67,7 +71,7 @@ func run() error {
 		return fmt.Errorf("%w", err)
 	}
 
-	err = executionLoop(string(content))
+	err = executionLoop(string(content), debugPtr)
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
