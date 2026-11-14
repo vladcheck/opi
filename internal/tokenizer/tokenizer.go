@@ -46,6 +46,14 @@ func (t *Tokenizer) Tokenize() ([]Token, error) {
 	return t.tokens, nil
 }
 
+func (t *Tokenizer) skipWhitespace() {
+	for isHorizontalWhitespace(t.peek()) {
+		t.advance()
+	}
+
+	t.consume()
+}
+
 func (t *Tokenizer) peek() string {
 	if t.isEOF() {
 		return ""
@@ -89,6 +97,10 @@ func (t *Tokenizer) consume() {
 
 func (t *Tokenizer) resetColumn() {
 	t.col = 0
+}
+
+func (t *Tokenizer) see() string {
+	return t.input[t.start:t.current]
 }
 
 func (t *Tokenizer) position() string {

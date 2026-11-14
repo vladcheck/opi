@@ -301,18 +301,6 @@ func (t *Tokenizer) isTwoCharsMatch(ch1, ch2 string) (bool, bool) {
 	return false, true
 }
 
-func (t *Tokenizer) skipWhitespace() {
-	for isHorizontalWhitespace(t.peek()) {
-		t.advance()
-	}
-
-	t.consume()
-}
-
-func (t *Tokenizer) see() string {
-	return t.input[t.start:t.current]
-}
-
 func (t *Tokenizer) isEOL() bool {
 	return !t.isEOF() && t.isPeekMatches("\n")
 }
