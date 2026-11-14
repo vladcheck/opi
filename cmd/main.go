@@ -121,9 +121,14 @@ func validatePath(path string) error {
 		}
 
 		return fmt.Errorf("%w", err)
-	} else if info.IsDir() {
+	}
+
+	if info.IsDir() {
 		return fmt.Errorf("%w: %s", ErrNotADirectory, path)
-	} else if got := filepath.Ext(filepath.Clean(path)); !strings.EqualFold(got, extension) {
+	}
+
+	got := filepath.Ext(filepath.Clean(path))
+	if !strings.EqualFold(got, extension) {
 		return fmt.Errorf("%w: want %q, got %q", ErrWrongExtension, extension, got)
 	}
 

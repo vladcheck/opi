@@ -6,7 +6,6 @@ linters:
     - wsl
     - exhaustruct
     - gomodguard
-    - noinlineerr
   exclusions:
     warn-unused: true
     rules:
