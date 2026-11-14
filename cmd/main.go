@@ -3,25 +3,26 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 )
 
-const extension = ".opi"
+var errLogger = log.New(os.Stderr, "", 0)
 
 var (
-	errLogger = log.New(os.Stderr, "", 0)
-
 	ErrPathRequired   = errors.New("filepath is not specified")
 	ErrDoesNotExist   = errors.New("path does not exist")
 	ErrNotADirectory  = errors.New("path must not be a directory")
 	ErrWrongExtension = errors.New("wrong file extension")
 )
+
+const extension = ".opi"
 
 func main() {
 	err := run()
@@ -38,11 +39,10 @@ func run() error {
 
 	var debugPtr bool
 	flag.BoolVar(&debugPtr, "debug", false,
-		"print debug strings during internal "+"actions (tokenizing, parsing, semantic analysis")
+		"print debug strings during internal "+"actions (tokenizing, parsing, etc)")
 
 	var execPtr string
-	flag.StringVar(&execPtr, "exec", "", "code to execute")
-	flag.StringVar(&execPtr, "e", "", "shorthand for -exec")
+	flag.StringVarP(&execPtr, "exec", "e", "", "code to execute. takes precedence over filepath.")
 
 	flag.Parse()
 
@@ -106,4 +106,11 @@ func validatePath(path string) error {
 	}
 
 	return nil
+}
+
+func usage() {
+	_, err := fmt.Fprintln(flag.CommandLine.Output(), "Usage: opi [flags] path/to/a/file")
+	if err != nil {
+		errLogger.Fatal(err)
+	}
 }
