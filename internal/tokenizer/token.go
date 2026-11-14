@@ -118,6 +118,20 @@ const (
 	TtWhile
 	// TtDo is the do keyword.
 	TtDo
+	// TtType is the type keyword.
+	TtType
+	// TtTypeInt32 is the keyword for a int32 data type.
+	// It maps directly to Go's 'int32' type.
+	TtTypeInt32
+	// TtTypeInt64 is the keyword for a int64 data type.
+	// It maps directly to Go's 'int64' type.
+	TtTypeInt64
+	// TtTypeBool is the keyword for a bool data type.
+	// It maps directly to Go's 'bool' type.
+	TtTypeBool
+	// TtTypeStr is the keyword for a str data type.
+	// It maps directly to Go's 'string' type.
+	TtTypeStr
 )
 
 // Token represents a smallest unit of opi language.
@@ -197,6 +211,11 @@ func tokenTypeBySubstring(substring string) (TokenType, bool) {
 		"for":      TtFor,
 		"while":    TtWhile,
 		"do":       TtDo,
+		"type":     TtType,
+		"int32":    TtTypeInt32,
+		"int64":    TtTypeInt64,
+		"bool":     TtTypeBool,
+		"str":      TtTypeStr,
 	}
 	Tt, ok := TtKeywordMap[substring]
 
@@ -259,6 +278,11 @@ func tokenTypeToString(tokenType TokenType) string {
 		TtFor:             "For",
 		TtWhile:           "While",
 		TtDo:              "Do",
+		TtType:            "Type",
+		TtTypeBool:        "TBool",
+		TtTypeInt32:       "TInt32",
+		TtTypeInt64:       "TInt64",
+		TtTypeStr:         "TStr",
 	}
 
 	value, ok := TtStringMap[tokenType]
